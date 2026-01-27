@@ -11,7 +11,7 @@ OpenCV to find sudoku grid
 OpenCv to normalize grid
 OpenCV to find cell in sudoku grid
 OpenCV to find if number is in cell
-Model to identify number if exsists
+Model to identify number if exists
 
 |
 | Array of digits [[[1, 2, 3], [...], [...]], [... ... ...]]
