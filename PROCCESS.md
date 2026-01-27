@@ -8,7 +8,7 @@ v
 
 ANALYZE:
 OpenCV to find sudoku grid
-OpenCv to normalize grid
+OpenCV to normalize grid
 OpenCV to find cell in sudoku grid
 OpenCV to find if number is in cell
 Model to identify number if exists
