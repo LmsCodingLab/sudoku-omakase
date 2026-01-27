@@ -1,5 +1,6 @@
 INPUT:
 aus der Sudoku Klasse (zu erstellen)
+(Library)
 
 |
 | Foto
