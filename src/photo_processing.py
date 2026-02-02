@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 from typing import Annotated
+from helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
 
 SIZE = 450
 
 # TODO1: Add more rigid controls over sudoku extraction (e.g. aspect ratio, size, etc.) Issue #15
-# TODO2: Abstract out the dev mode code into a decorator to reduce clutter. Issue #14
 def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndarray, (SIZE, SIZE), np.uint8]:
     """
     Detects a sudoku grid in the given image.
@@ -21,41 +21,28 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
     grey_image = cv2.imread(filename=image_path, flags=0) 
     if grey_image is None:
         raise FileNotFoundError(f"Image not found at path: {image_path}. File may be missing or have an unsupported format.")
+    dev_show_image(dev_mode, "Greyscale Image", grey_image)
     
     smooth = cv2.GaussianBlur(src=grey_image, ksize=(5, 5), sigmaX=0) 
-    if dev_mode:
-        cv2.imshow("Smoothed Image", smooth)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    dev_show_image(dev_mode, "Smoothed Image", smooth)
 
 
     # Apply adaptive thresholding to get a binary image
     thresh = cv2.adaptiveThreshold(
         src=smooth, maxValue=255, adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, thresholdType=cv2.THRESH_BINARY_INV, blockSize=13, C=4
     )
-    if dev_mode:
-        cv2.imshow("Thresholded Image", thresh)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    dev_show_image(dev_mode, "Thresholded Image", thresh)
+    
 
 
     # Apply edge detection
     edges = cv2.Canny(image=thresh, threshold1=50, threshold2=150, apertureSize=5, L2gradient=True)
-    if dev_mode:
-        cv2.imshow("Edges", edges)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
+    dev_show_image(dev_mode, "Edges", edges)
 
     # Find contours in the edged image
     contours, _ = cv2.findContours(image=edges, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
-    if dev_mode:
-        print(f"Found {len(contours)} contours")
-        tmp = cv2.cvtColor(grey_image, cv2.COLOR_GRAY2BGR)
-        cv2.drawContours(image=tmp, contours=contours, contourIdx=-1, color=(0, 0, 255), thickness=2)
-        cv2.imshow("Contours", tmp)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    dev_show_message(dev_mode, f"Found {len(contours)} contours")
+    dev_draw_image(dev_mode, "Contours", grey_image, contours, color=(0, 0, 255))
 
 
     # Find the largest contour which should be the sudoku grid
@@ -68,12 +55,7 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
         # approximated contour has 4 points, we can assume we found the sudoku grid
         if len(approx) == 4:
             sudoku = approx
-            if dev_mode:
-                tmp = cv2.cvtColor(grey_image, cv2.COLOR_GRAY2BGR)
-                cv2.drawContours(image=tmp, contours=[sudoku], contourIdx=-1, color=(0, 255, 0), thickness=2)
-                cv2.imshow("Sudoku Contour", tmp)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
+            dev_draw_image(dev_mode, "Sudoku Contour", grey_image, [sudoku], color=(0, 255, 0))
             break
     if sudoku is None:
         raise RuntimeError("Couldn't find sudoku grid in the image")
@@ -83,16 +65,13 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
     pts1 = _order_points(sudoku)
     pts2 = np.array([[0, 0], [SIZE, 0], [0, SIZE], [SIZE, SIZE]], dtype=np.float32) # square shape
 
-    if dev_mode:
-        print(f"Sudoku Points: {pts1}")
+    dev_show_message(dev_mode, f"Source Points: {pts1}")
+    dev_show_message(dev_mode, f"Destination Points: {pts2}")
 
     matrix = cv2.getPerspectiveTransform(src=pts1, dst=pts2)
     warped = cv2.warpPerspective(src=grey_image, M=matrix, dsize=(SIZE, SIZE))
 
-    if dev_mode:
-        cv2.imshow("Warped Sudoku", warped)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    dev_show_image(dev_mode, "Warped Sudoku", warped)
 
     return warped
 
