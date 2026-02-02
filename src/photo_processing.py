@@ -96,4 +96,4 @@ def _order_points(pts: Annotated[np.ndarray, np.float32]) -> Annotated[np.ndarra
     return ordered_pts 
 
 if __name__ == "__main__":
-    extract_sudoku("test/test-sudoku.jpg", dev_mode=True)
+    extract_sudoku("test/sudoku1.png", dev_mode=True)
