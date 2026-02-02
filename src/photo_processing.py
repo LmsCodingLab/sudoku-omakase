@@ -59,7 +59,8 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
 
 
     # Find the largest contour which should be the sudoku grid
-    # ! Potential bug here if the largest contour is not the sudoku grid (it will take alot of time to fix so leaving as is for now)
+    # ! Potential bug here if the largest contour is not the sudoku grid
+    # ! Potential bug2 if no contour aruond the sudoku it will choose some random contour to be the sudoku grid
     sudoku = None
     for contour in sorted(contours, key=cv2.contourArea, reverse=True):
         perimeter = cv2.arcLength(curve=contour, closed=True)
@@ -117,4 +118,4 @@ def _order_points(pts: Annotated[np.ndarray, np.float32]) -> Annotated[np.ndarra
     return ordered_pts 
 
 if __name__ == "__main__":
-    extract_sudoku("test/test-sudoku.jpg", dev_mode=True)
+    extract_sudoku("test/sudoku1.png", dev_mode=True)
