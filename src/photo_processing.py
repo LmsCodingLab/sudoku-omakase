@@ -17,7 +17,7 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
     - np.ndarray, the extracted (warped) sudoku grid image.
     """
 
-    # Load the image convert to grayscale and blur it
+    # Load the image, convert to grayscale and blur it
     grey_image = cv2.imread(filename=image_path, flags=0) 
     if grey_image is None:
         raise FileNotFoundError(f"Image not found at path: {image_path}. File may be missing or have an unsupported format.")
