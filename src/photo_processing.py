@@ -1,12 +1,13 @@
 import cv2
 import numpy as np
-from typing import Annotated
+import numpy.typing as npt
+from cv2.typing import MatLike
 from helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
 
 SIZE = 450
 
 # TODO1: Add more rigid controls over sudoku extraction (e.g. aspect ratio, size, etc.) Issue #15
-def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndarray, (SIZE, SIZE), np.uint8]:
+def extract_sudoku(image_path: str, dev_mode: bool = False) -> MatLike:
     """
     Detects a sudoku grid in the given image.
 
@@ -81,7 +82,7 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
 
     return warped
 
-def _order_points(pts: Annotated[np.ndarray, np.float32]) -> Annotated[np.ndarray, (4,2), np.float32]:
+def _order_points(pts:  MatLike) -> npt.NDArray[np.float32]:
     """
     Orders points in the order: top-left, top-right, bottom-left, bottom-right, with coordinates starting at the top-left corner.
 
