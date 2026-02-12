@@ -23,24 +23,30 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
         raise FileNotFoundError(f"Image not found at path: {image_path}. File may be missing or have an unsupported format.")
     dev_show_image(dev_mode, "Greyscale Image", grey_image)
     
-    smooth = cv2.GaussianBlur(src=grey_image, ksize=(5, 5), sigmaX=0) 
+    smooth = cv2.GaussianBlur(src=grey_image, ksize=(7, 7), sigmaX=0) 
     dev_show_image(dev_mode, "Smoothed Image", smooth)
 
 
     # Apply adaptive thresholding to get a binary image
     thresh = cv2.adaptiveThreshold(
-        src=smooth, maxValue=255, adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, thresholdType=cv2.THRESH_BINARY_INV, blockSize=13, C=4
+        src=smooth, 
+        maxValue=255, 
+        adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+        thresholdType=cv2.THRESH_BINARY_INV, 
+        blockSize=13, 
+        C=8
     )
     dev_show_image(dev_mode, "Thresholded Image", thresh)
-    
 
 
-    # Apply edge detection
-    edges = cv2.Canny(image=thresh, threshold1=50, threshold2=150, apertureSize=5, L2gradient=True)
-    dev_show_image(dev_mode, "Edges", edges)
+    # Connect broken grid lines / border so contours become closed
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    closed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=2)
+    dev_show_image(dev_mode, "Closed (morphology)", closed)
+
 
     # Find contours in the edged image
-    contours, _ = cv2.findContours(image=edges, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(image=closed, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
     dev_show_message(dev_mode, f"Found {len(contours)} contours")
     dev_draw_image(dev_mode, "Contours", grey_image, contours, color=(0, 0, 255))
 
@@ -63,7 +69,7 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
 
     # Get the edge points and apply perspective transform
     pts1 = _order_points(sudoku)
-    pts2 = np.array([[0, 0], [SIZE, 0], [0, SIZE], [SIZE, SIZE]], dtype=np.float32) # square shape
+    pts2 = np.array([[0, 0], [SIZE -1, 0], [0, SIZE -1], [SIZE -1, SIZE -1]], dtype=np.float32) # square shape
 
     dev_show_message(dev_mode, f"Source Points: {pts1}")
     dev_show_message(dev_mode, f"Destination Points: {pts2}")
