@@ -69,7 +69,7 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> Annotated[np.ndar
     dev_show_message(dev_mode, f"Destination Points: {pts2}")
 
     matrix = cv2.getPerspectiveTransform(src=pts1, dst=pts2)
-    warped = cv2.warpPerspective(src=grey_image, M=matrix, dsize=(SIZE, SIZE))
+    warped = cv2.warpPerspective(src=thresh, M=matrix, dsize=(SIZE, SIZE))
 
     dev_show_image(dev_mode, "Warped Sudoku", warped)
 
