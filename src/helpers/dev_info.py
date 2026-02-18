@@ -1,14 +1,14 @@
 import cv2
-from typing import Sequence
+from typing import Sequence, Final 
 import numpy as np
 
-IMG_SIZE = (900,900)
-IMG_LOCATION = (400,30)
+img_size: Final[tuple[int, int]] = (900,900)
+img_location: Final[tuple[int, int]] = (400,30)
 
 def window_helper(title: str, image: np.ndarray) -> None:
         cv2.namedWindow(title)        
-        cv2.moveWindow(title, *IMG_LOCATION)  
-        image_resized = cv2.resize(image, (IMG_SIZE)) 
+        cv2.moveWindow(title, *img_location)  
+        image_resized = cv2.resize(image, img_size) 
         cv2.imshow(title, image_resized)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
