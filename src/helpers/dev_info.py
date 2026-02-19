@@ -45,7 +45,7 @@ def dev_draw_image(dev_mode: bool, title: str, image: np.ndarray, contours: Sequ
         else:
             tmp = image.copy()
         cv2.drawContours(image=tmp, contours=contours, contourIdx=-1, color=color, thickness=thickness)
-        window_helper(title, image)
+        window_helper(title, tmp)
 
 def dev_show_message(dev_mode: bool, message: str) -> None:
     """
