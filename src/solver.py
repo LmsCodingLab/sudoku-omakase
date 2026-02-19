@@ -1,11 +1,12 @@
 import numpy as np
+import numpy.typing as npt
 
 GRID_SIZE = 9
 BLOCK_SIZE = 3
 VALID_VALUES = tuple(range(1, GRID_SIZE + 1))
 
 
-def parse_sudoku() -> np.ndarray:
+def parse_sudoku() -> npt.NDArray[np.int_]:
     """Read a Sudoku grid from stdin, expecting comma separated rows."""
     grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=int)
     for row_idx in range(GRID_SIZE):
@@ -14,19 +15,19 @@ def parse_sudoku() -> np.ndarray:
     return grid
 
 
-def contains_only_valid_numbers(grid: np.ndarray) -> bool:
+def contains_only_valid_numbers(grid: npt.NDArray[np.int_]) -> bool:
     return bool(np.all(np.isin(grid, VALID_VALUES)))
 
 
-def rows_are_unique(grid: np.ndarray) -> bool:
+def rows_are_unique(grid: npt.NDArray[np.int_]) -> bool:
     return all(len(np.unique(grid[row_idx, :])) == GRID_SIZE for row_idx in range(GRID_SIZE))
 
 
-def columns_are_unique(grid: np.ndarray) -> bool:
+def columns_are_unique(grid: npt.NDArray[np.int_]) -> bool:
     return all(len(np.unique(grid[:, col_idx])) == GRID_SIZE for col_idx in range(GRID_SIZE))
 
 
-def blocks_are_unique(grid: np.ndarray) -> bool:
+def blocks_are_unique(grid: npt.NDArray[np.int_]) -> bool:
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
             block = grid[start_row:start_row + BLOCK_SIZE, 
@@ -36,7 +37,17 @@ def blocks_are_unique(grid: np.ndarray) -> bool:
     return True
 
 
-def is_valid_sudoku(grid: np.ndarray) -> bool:
+def is_valid_sudoku(grid: npt.NDArray[np.int_]) -> bool:
+    """
+    Checks if a given Sudoku grid is valid by ensuring that it contains only valid numbers and that each row, column, and 3x3 block contains unique values. 
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to be checked.
+
+    Returns:
+    - bool, True if the grid is a valid Sudoku grid, False otherwise.
+    """
+    
     if not contains_only_valid_numbers(grid):
         return False
     return rows_are_unique(grid) and columns_are_unique(grid) and blocks_are_unique(grid)
@@ -54,6 +65,6 @@ EXAMPLE_GRID = np.array([[4, 1, 5, 2, 7, 9, 3, 8, 6],
 
 
 if __name__ == "__main__":
-    sudoku_grid = parse_sudoku()
-    print(f"sudoku_check: {is_valid_sudoku(sudoku_grid)}")
-    print(sudoku_grid)
+    # sudoku_grid = parse_sudoku()
+    print(f"sudoku_check: {is_valid_sudoku(EXAMPLE_GRID)}")
+    print(EXAMPLE_GRID)
