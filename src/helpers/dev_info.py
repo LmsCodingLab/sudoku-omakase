@@ -1,6 +1,19 @@
 import cv2
-from typing import Sequence
+from typing import Sequence, Final 
 import numpy as np
+
+img_size: Final[tuple[int, int]] = (900,900)
+img_location: Final[tuple[int, int]] = (400,30)
+
+def window_helper(title: str, image: np.ndarray) -> None:
+        cv2.namedWindow(title, cv2.WINDOW_NORMAL)        
+        cv2.moveWindow(title, *img_location)  
+        image_resized = cv2.resize(image, img_size) 
+        cv2.imshow(title, image_resized)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    
+
 
 def dev_show_image(dev_mode: bool, title: str, image: np.ndarray) -> None:
     """
@@ -12,9 +25,7 @@ def dev_show_image(dev_mode: bool, title: str, image: np.ndarray) -> None:
     - image: np.ndarray, image to be displayed.
     """
     if dev_mode:
-        cv2.imshow(title, image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        window_helper(title, image)
 
 def dev_draw_image(dev_mode: bool, title: str, image: np.ndarray, contours: Sequence[np.ndarray], color: tuple[int, int, int], thickness: int = 2) -> None:
     """
@@ -34,9 +45,7 @@ def dev_draw_image(dev_mode: bool, title: str, image: np.ndarray, contours: Sequ
         else:
             tmp = image.copy()
         cv2.drawContours(image=tmp, contours=contours, contourIdx=-1, color=color, thickness=thickness)
-        cv2.imshow(title, tmp)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        window_helper(title, image)
 
 def dev_show_message(dev_mode: bool, message: str) -> None:
     """
