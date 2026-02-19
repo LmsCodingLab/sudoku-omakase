@@ -6,7 +6,7 @@ img_size: Final[tuple[int, int]] = (900,900)
 img_location: Final[tuple[int, int]] = (400,30)
 
 def window_helper(title: str, image: np.ndarray) -> None:
-        cv2.namedWindow(title)        
+        cv2.namedWindow(title, cv2.WINDOW_NORMAL)        
         cv2.moveWindow(title, *img_location)  
         image_resized = cv2.resize(image, img_size) 
         cv2.imshow(title, image_resized)
