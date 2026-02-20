@@ -16,10 +16,11 @@ def warmup() -> tuple[DataLoader, DataLoader]:
     transforms.ToTensor()
   ])
 
+  # Load the datasets
   emnist_train = datasets.EMNIST(root="./datasets", split="digits", train=True, download=True, transform=emnist_transform)
   svhn_train = datasets.SVHN(root="./datasets", split="train", download=True, transform=svhn_transform)
 
   emnist_DataLoader = DataLoader(emnist_train, batch_size=64, shuffle=True)
   svhn_DataLoader = DataLoader(svhn_train, batch_size=64, shuffle=True)
-  
+
   return emnist_DataLoader, svhn_DataLoader
