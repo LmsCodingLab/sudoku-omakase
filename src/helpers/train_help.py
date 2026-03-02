@@ -55,7 +55,6 @@ def testing_step(data_loader: torch.utils.data.DataLoader,
               accuracy_fn,
               device: torch.device = torch.device("cpu")):
     test_loss, test_acc = 0, 0
-    model.to(device)
     model.eval() # put model in eval mode
     # Turn on inference context manager
     with torch.inference_mode(): 

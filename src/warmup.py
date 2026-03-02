@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader, ConcatDataset
 
 
 # Preparing the data for training or in other words warming up ;)
-def warmup() -> DataLoader:
+def warmup() -> tuple[DataLoader, DataLoader]:
   """
   Prepare the EMNIST and SVHN datasets for training by applying necessary transformations and creating DataLoader.
 
@@ -11,7 +11,7 @@ def warmup() -> DataLoader:
   - None
 
   Returns:
-  - DataLoader: A DataLoader for the combined EMNIST and SVHN datasets.
+  - tuple[DataLoader, DataLoader]: A tuple containing the training and test DataLoaders for the combined EMNIST and SVHN datasets.
   """
 
   # Define transformation of datasets to be compatible with the model and each other (grayscale, 32x32, normalized)
@@ -33,13 +33,14 @@ def warmup() -> DataLoader:
   emnist_train = datasets.EMNIST(root="./datasets", split="digits", train=True, download=True, transform=emnist_transform)
   svhn_train = datasets.SVHN(root="./datasets", split="train", download=True, transform=svhn_transform)
 
+  emnist_test = datasets.EMNIST(root="./datasets", split="digits", train=False, download=True, transform=emnist_transform)
+  svhn_test = datasets.SVHN(root="./datasets", split="test", download=True, transform=svhn_transform)
+
   # Combine the datasets and create a DataLoader
   combined_dataset = ConcatDataset(datasets=[emnist_train, svhn_train])
+  combined_test_dataset = ConcatDataset(datasets=[emnist_test, svhn_test])
   data_loader = DataLoader(dataset=combined_dataset, batch_size=64, shuffle=True)
+  test_loader = DataLoader(dataset=combined_test_dataset, batch_size=64, shuffle=False)
 
-  return data_loader
-
-if __name__ == "__main__":
-  data_loader = warmup()
-  print(f"Number of batches in combined dataset: {len(data_loader)}")
+  return data_loader, test_loader
 

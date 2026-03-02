@@ -1,15 +1,16 @@
 import torch
 from torch import nn
+from torchvision import models
 
-# TODO
 class BasicCNNModel(nn.Module):
   """
   A basic Convolutional Neural Network (CNN) model for image classification tasks.
   This model consists of convolutional layers followed by fully connected layers for classification.
 
-  Replicating this architecture: https://poloclub.github.io/cnn-explainer/
+  Replicating this architecture (with small tweaks): https://poloclub.github.io/cnn-explainer/
   """
-  def __init__(self, input_shape: int, hidden_units: int, output_shape: int, image_size: int = 32):
+  def __init__(self, input_shape: int, output_shape: int, image_size: int = 32):
+    hidden_units = 10
     super(BasicCNNModel, self).__init__()
     self.conv_block1 = nn.Sequential(
       nn.Conv2d(in_channels=input_shape, 
@@ -28,13 +29,13 @@ class BasicCNNModel(nn.Module):
     )
     self.conv_block2 = nn.Sequential(
       nn.Conv2d(in_channels=hidden_units,
-                out_channels=hidden_units,
+                out_channels=hidden_units*4,
                 kernel_size=3,
                 stride=1,
                 padding=1),
       nn.ReLU(),
-      nn.Conv2d(in_channels=hidden_units,
-                out_channels=hidden_units,
+      nn.Conv2d(in_channels=hidden_units*4,
+                out_channels=hidden_units*4,
                 kernel_size=3,
                 stride=1,
                 padding=1),
@@ -44,7 +45,8 @@ class BasicCNNModel(nn.Module):
     final_size = image_size // 4 # after two max pooling layers with kernel size 2, the image size is reduced by a factor of 4
     self.classifier = nn.Sequential(
       nn.Flatten(),
-      nn.Linear(in_features=hidden_units*final_size*final_size, out_features=output_shape)
+      nn.Dropout(p=0.33),
+      nn.Linear(in_features=hidden_units*4*final_size*final_size, out_features=output_shape)
     )
     
   def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -61,10 +63,18 @@ class BasicCNNModel(nn.Module):
     x = self.conv_block2(x)
     x = self.classifier(x)
     return x
-  
 
-if __name__ == "__main__":
-  torch.manual_seed(42)
-  model = BasicCNNModel(input_shape=1, hidden_units=10, output_shape=10)
-  print(model)
-        
+class ResNet18_32(nn.Module):
+  """
+  A ResNet-18 architecture adapted for 32x32 input images.
+  This model consists of residual blocks that allow for deeper networks without the vanishing gradient problem.
+  """
+  def __init__(self, input_shape: int, output_shape: int):
+    super(ResNet18_32, self).__init__()
+    self.model = models.resnet18(weights=None)
+    self.model.conv1 = nn.Conv2d(in_channels=input_shape, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
+    self.model.maxpool = nn.Identity()  # type: ignore[assignment] # Remove the max pooling layer to preserve spatial dimensions for 32x32 input
+    self.model.fc = nn.Linear(in_features=512, out_features=output_shape)
+  
+  def forward(self, x: torch.Tensor) -> torch.Tensor:
+    return self.model(x)
