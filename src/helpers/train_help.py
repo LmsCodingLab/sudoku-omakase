@@ -1,9 +1,10 @@
 import torch
+from src.helpers.dev_info import dev_show_message
 
-def accuracy_fn(y_true, y_pred):
+def accuracy_fn(y_true: torch.Tensor, y_pred: torch.Tensor, dev_mode: bool = False) -> float:
     """Calculates accuracy between truth labels and predictions.
 
-    Args:
+    Parameters:
         y_true (torch.Tensor): Truth labels for predictions.
         y_pred (torch.Tensor): Predictions to be compared to truth labels.
 
@@ -12,14 +13,30 @@ def accuracy_fn(y_true, y_pred):
     """
     correct = torch.eq(y_true, y_pred).sum().item()
     acc = (correct / len(y_pred)) * 100
+    dev_show_message(dev_mode, f"Accuracy: {acc:.2f}%")
     return acc
 
-def training_step(model: torch.nn.Module,
+def training_step(
+               model: torch.nn.Module,
                data_loader: torch.utils.data.DataLoader,
                loss_fn: torch.nn.Module,
                optimizer: torch.optim.Optimizer,
                accuracy_fn,
-               device: torch.device = torch.device("cpu")):
+               device: torch.device = torch.device("cpu"), 
+               dev_mode: bool = False) -> None:
+    """
+    Performs a training step for a given model, data loader, loss function, optimizer, and accuracy function.
+    Parameters:
+        model (torch.nn.Module): The model to be trained.
+        data_loader (torch.utils.data.DataLoader): The data loader providing training data.
+        loss_fn (torch.nn.Module): The loss function to calculate the loss.
+        optimizer (torch.optim.Optimizer): The optimizer to update the model parameters.
+        accuracy_fn: A function to calculate the accuracy of predictions.
+        device (torch.device, optional): The device to perform training on. Defaults to torch.device("cpu").
+    
+    Returns:
+        None
+    """
     train_loss, train_acc = 0, 0
     model.train() # put model in train mode
     for batch, (X, y) in enumerate(data_loader):
@@ -33,7 +50,7 @@ def training_step(model: torch.nn.Module,
         loss = loss_fn(y_pred, y)
         train_loss += loss.item()
         train_acc += accuracy_fn(y_true=y,
-                                 y_pred=y_pred.argmax(dim=1)) # Go from logits -> pred labels
+                                 y_pred=y_pred.argmax(dim=1), dev_mode=dev_mode) # Go from logits -> pred labels
 
         # 3. Optimizer zero grad
         optimizer.zero_grad()
@@ -47,13 +64,27 @@ def training_step(model: torch.nn.Module,
     # Calculate loss and accuracy per epoch and print out what's happening
     train_loss /= len(data_loader)
     train_acc /= len(data_loader)
-    print(f"Train loss: {train_loss:.5f} | Train accuracy: {train_acc:.2f}%")
+    dev_show_message(dev_mode, f"Train loss: {train_loss:.5f} | Train accuracy: {train_acc:.2f}%")
 
 def testing_step(data_loader: torch.utils.data.DataLoader,
               model: torch.nn.Module,
               loss_fn: torch.nn.Module,
               accuracy_fn,
-              device: torch.device = torch.device("cpu")):
+              device: torch.device = torch.device("cpu"),
+              dev_mode: bool = False) -> None:
+    """
+    Performs a testing step for a given model, data loader, loss function, and accuracy function.
+
+    Parameters:
+        data_loader (torch.utils.data.DataLoader): The data loader providing testing data.
+        model (torch.nn.Module): The model to be evaluated.
+        loss_fn (torch.nn.Module): The loss function to calculate the loss.
+        accuracy_fn: A function to calculate the accuracy of predictions.
+        device (torch.device, optional): The device to perform testing on. Defaults to torch.device("cpu").
+    
+    Returns:
+        None
+    """
     test_loss, test_acc = 0, 0
     model.eval() # put model in eval mode
     # Turn on inference context manager
@@ -68,10 +99,10 @@ def testing_step(data_loader: torch.utils.data.DataLoader,
             # 2. Calculate loss and accuracy
             test_loss += loss_fn(test_pred, y).item()
             test_acc += accuracy_fn(y_true=y,
-                y_pred=test_pred.argmax(dim=1) # Go from logits -> pred labels
+                y_pred=test_pred.argmax(dim=1), dev_mode=dev_mode # Go from logits -> pred labels
             )
         
         # Adjust metrics and print out
         test_loss /= len(data_loader)
         test_acc /= len(data_loader)
-        print(f"Test loss: {test_loss:.5f} | Test accuracy: {test_acc:.2f}%\n")
+        dev_show_message(dev_mode, f"Test loss: {test_loss:.5f} | Test accuracy: {test_acc:.2f}%\n")

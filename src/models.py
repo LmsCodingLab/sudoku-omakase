@@ -8,6 +8,11 @@ class BasicCNNModel(nn.Module):
   This model consists of convolutional layers followed by fully connected layers for classification.
 
   Replicating this architecture (with small tweaks): https://poloclub.github.io/cnn-explainer/
+
+  Parameters:
+  - input_shape: int, the number of channels in the input images (e.g., 1 for grayscale, 3 for RGB).
+  - output_shape: int, the number of classes for the output layer.
+  - image_size: int, the height and width of the input images (default is 32, assuming square images).
   """
   def __init__(self, input_shape: int, output_shape: int, image_size: int = 32):
     hidden_units = 10
@@ -68,6 +73,10 @@ class ResNet18_32(nn.Module):
   """
   A ResNet-18 architecture adapted for 32x32 input images.
   This model consists of residual blocks that allow for deeper networks without the vanishing gradient problem.
+
+  Parameters:
+  - input_shape: int, the number of channels in the input images (e.g., 1 for grayscale, 3 for RGB).
+  - output_shape: int, the number of classes for the output layer.
   """
   def __init__(self, input_shape: int, output_shape: int):
     super(ResNet18_32, self).__init__()
