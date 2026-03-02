@@ -1,12 +1,13 @@
 import torch
 from torch import nn
 from timeit import default_timer as timer
+from pathlib import Path
 from src.models import BasicCNNModel, ResNet18_32
 from src.warmup import warmup
 from src.helpers.train_help import accuracy_fn, training_step, testing_step
 from src.helpers.dev_info import dev_show_message
 
-def basic_training_loop(model_type: str, dev_mode: bool = False) -> None:
+def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   """
   A basic training loop for training a CNN model on a dataset. This function initializes the model, sets up the loss function and optimizer, and runs the training and testing steps for a specified number of epochs.
 
@@ -43,18 +44,24 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> None:
                   loss_fn=loss_fn,
                   optimizer=optimizer,
                   accuracy_fn=accuracy_fn,
-                  device=device) # type: ignore[call-arg]
+                  device=device, # type: ignore[call-arg]
+                  dev_mode=dev_mode) 
     
     testing_step(model=model,
               data_loader=test_loader,
               loss_fn=loss_fn,
               accuracy_fn=accuracy_fn,
-              device=device) # type: ignore[call-arg]
+              device=device,# type: ignore[call-arg]
+              dev_mode=dev_mode) 
     
   train_time_end = timer()
   dev_show_message(dev_mode, f"Total training time: {train_time_end - train_time_start:.3f} seconds")
 
+  return model
+
 if __name__ == "__main__":
   torch.manual_seed(42)
-  basic_training_loop(model_type="basic", dev_mode=True)
+  model = basic_training_loop(model_type="basic", dev_mode=True)
+  Path("weights").mkdir(parents=True, exist_ok=True)
+  torch.save(model.state_dict(), "weights/basic_cnn_model.pth")
   
