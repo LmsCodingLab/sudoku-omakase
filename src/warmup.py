@@ -14,12 +14,12 @@ def warmup() -> DataLoader:
   - DataLoader: A DataLoader for the combined EMNIST and SVHN datasets.
   """
 
-  # Define transofrmation of datasets to be compatible with the model and each other (grayscale, 32x32, normalized)
+  # Define transformation of datasets to be compatible with the model and each other (grayscale, 32x32, normalized)
   emnist_transform = transforms.Compose([
     transforms.Resize(size=(32, 32)),
     transforms.RandomInvert(p=1),
-    transforms.Lambda(lambda x: x.transpose(1, 2)),
     transforms.ToTensor(),
+    transforms.Lambda(lambda x: x.transpose(1, 2)),
     transforms.Normalize(mean=(0.5,), std=(0.5,))
   ])
 

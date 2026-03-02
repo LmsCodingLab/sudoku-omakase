@@ -5,7 +5,7 @@ def accuracy_fn(y_true, y_pred):
 
     Args:
         y_true (torch.Tensor): Truth labels for predictions.
-        y_pred (torch.Tensor): Predictions to be compared to predictions.
+        y_pred (torch.Tensor): Predictions to be compared to truth labels.
 
     Returns:
         [torch.float]: Accuracy value between y_true and y_pred, e.g. 78.45
@@ -21,7 +21,7 @@ def training_step(model: torch.nn.Module,
                accuracy_fn,
                device: torch.device = torch.device("cpu")):
     train_loss, train_acc = 0, 0
-    model.to(device)
+    model.train() # put model in train mode
     for batch, (X, y) in enumerate(data_loader):
         # Send data to GPU
         X, y = X.to(device), y.to(device)
@@ -31,7 +31,7 @@ def training_step(model: torch.nn.Module,
 
         # 2. Calculate loss
         loss = loss_fn(y_pred, y)
-        train_loss += loss
+        train_loss += loss.item()
         train_acc += accuracy_fn(y_true=y,
                                  y_pred=y_pred.argmax(dim=1)) # Go from logits -> pred labels
 
@@ -67,7 +67,7 @@ def testing_step(data_loader: torch.utils.data.DataLoader,
             test_pred = model(X)
             
             # 2. Calculate loss and accuracy
-            test_loss += loss_fn(test_pred, y)
+            test_loss += loss_fn(test_pred, y).item()
             test_acc += accuracy_fn(y_true=y,
                 y_pred=test_pred.argmax(dim=1) # Go from logits -> pred labels
             )

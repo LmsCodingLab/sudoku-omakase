@@ -7,9 +7,9 @@ class BasicCNNModel(nn.Module):
   A basic Convolutional Neural Network (CNN) model for image classification tasks.
   This model consists of convolutional layers followed by fully connected layers for classification.
 
-  Replecating this architecture: https://poloclub.github.io/cnn-explainer/
+  Replicating this architecture: https://poloclub.github.io/cnn-explainer/
   """
-  def __init__(self, input_shape: int, hidden_units: int, output_shape: int):
+  def __init__(self, input_shape: int, hidden_units: int, output_shape: int, image_size: int = 32):
     super(BasicCNNModel, self).__init__()
     self.conv_block1 = nn.Sequential(
       nn.Conv2d(in_channels=input_shape, 
@@ -41,9 +41,10 @@ class BasicCNNModel(nn.Module):
       nn.ReLU(),
       nn.MaxPool2d(kernel_size=2)
     )
-    self.classifer = nn.Sequential(
+    final_size = image_size // 4 # after two max pooling layers with kernel size 2, the image size is reduced by a factor of 4
+    self.classifier = nn.Sequential(
       nn.Flatten(),
-      nn.Linear(in_features=hidden_units*7*7, out_features=output_shape)
+      nn.Linear(in_features=hidden_units*final_size*final_size, out_features=output_shape)
     )
     
   def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -57,10 +58,8 @@ class BasicCNNModel(nn.Module):
     - torch.Tensor, the output tensor representing the class scores for each input image.
     """
     x = self.conv_block1(x)
-    print(x.shape)
     x = self.conv_block2(x)
-    print(x.shape)
-    x = self.classifer(x)
+    x = self.classifier(x)
     return x
   
 

@@ -8,6 +8,7 @@ from src.helpers.train_help import accuracy_fn, training_step, testing_step
 
 def basic_training_loop(model: nn.Module):
   device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
+  model.to(device)
   print(f"Using device: {device}")
   
   loss_fn = nn.CrossEntropyLoss()
