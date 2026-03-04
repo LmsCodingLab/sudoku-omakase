@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 from cv2.typing import MatLike
-from helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
+from src.helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
+from src.test.scripts.test_model import manually_test_model
 
 SIZE = 450
 
@@ -127,14 +128,14 @@ def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike
     resized_fields = []
     dev_show_message(dev_mode, "Now resizing")
     for field in fields:
-        resized_field = cv2.resize(field, (33, 33), interpolation=cv2.INTER_AREA)
-        resized_field = resized_field[1:-1, 1:-1]
+        resized_field = cv2.resize(field, (32, 32), interpolation=cv2.INTER_AREA)
         resized_fields.append(resized_field)
         dev_show_image(dev_mode, "Downscaled", resized_field)
+        manually_test_model(resized_field)
 
     return resized_fields
 
 if __name__ == "__main__":
-    clean_sudoku = extract_sudoku("test/test-sudoku.jpg", dev_mode=True)
-    fields = extract_fields(clean_sudoku, dev_mode=True)
+    clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=True)
+    fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=True)
