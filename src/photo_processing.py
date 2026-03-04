@@ -103,4 +103,4 @@ def _order_points(pts:  MatLike) -> npt.NDArray[np.float32]:
     return ordered_pts 
 
 if __name__ == "__main__":
-    extract_sudoku("test/sudoku_hard.png", dev_mode=True)
+    extract_sudoku("src/test/test-sudoku.jpg", dev_mode=True)
