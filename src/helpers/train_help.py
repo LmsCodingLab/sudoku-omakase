@@ -13,7 +13,6 @@ def accuracy_fn(y_true: torch.Tensor, y_pred: torch.Tensor, dev_mode: bool = Fal
     """
     correct = torch.eq(y_true, y_pred).sum().item()
     acc = (correct / len(y_pred)) * 100
-    dev_show_message(dev_mode, f"Accuracy: {acc:.2f}%")
     return acc
 
 def training_step(
