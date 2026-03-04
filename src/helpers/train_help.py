@@ -1,7 +1,7 @@
 import torch
 from src.helpers.dev_info import dev_show_message
 
-def accuracy_fn(y_true: torch.Tensor, y_pred: torch.Tensor, dev_mode: bool = False) -> float:
+def accuracy_fn(y_true: torch.Tensor, y_pred: torch.Tensor) -> float:
     """Calculates accuracy between truth labels and predictions.
 
     Parameters:
@@ -13,7 +13,6 @@ def accuracy_fn(y_true: torch.Tensor, y_pred: torch.Tensor, dev_mode: bool = Fal
     """
     correct = torch.eq(y_true, y_pred).sum().item()
     acc = (correct / len(y_pred)) * 100
-    dev_show_message(dev_mode, f"Accuracy: {acc:.2f}%")
     return acc
 
 def training_step(
@@ -50,7 +49,7 @@ def training_step(
         loss = loss_fn(y_pred, y)
         train_loss += loss.item()
         train_acc += accuracy_fn(y_true=y,
-                                 y_pred=y_pred.argmax(dim=1), dev_mode=dev_mode) # Go from logits -> pred labels
+                                 y_pred=y_pred.argmax(dim=1)) # Go from logits -> pred labels
 
         # 3. Optimizer zero grad
         optimizer.zero_grad()

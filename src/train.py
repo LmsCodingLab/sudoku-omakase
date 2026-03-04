@@ -36,7 +36,7 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   data_loader, test_loader = warmup(dev_mode=dev_mode)
 
   train_time_start = timer()
-  epochs = 7
+  epochs = 6
   for epoch in range(epochs):
     dev_show_message(dev_mode, f"Epoch: {epoch}")
     training_step(model=model,
@@ -61,7 +61,7 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
 
 if __name__ == "__main__":
   torch.manual_seed(42)
-  model = basic_training_loop(model_type="basic", dev_mode=True)
+  model = basic_training_loop(model_type="resnet", dev_mode=True)
   Path("weights").mkdir(parents=True, exist_ok=True)
-  torch.save(model.state_dict(), "weights/basic_cnn_model.pth")
+  torch.save(model.state_dict(), "weights/resnet18_32_model.pth")
   
