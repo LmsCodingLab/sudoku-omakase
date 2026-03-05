@@ -37,7 +37,8 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   
   loss_fn = nn.CrossEntropyLoss()
   optimizer = torch.optim.SGD(params=model.parameters(), lr=0.01)
-  data_loader, test_loader = warmup(dev_mode=dev_mode)
+  batch_size = 16 if model_type == "resnext" else 64
+  data_loader, test_loader = warmup(batch_size=batch_size, dev_mode=dev_mode)
 
   train_time_start = timer()
   epochs = 20
