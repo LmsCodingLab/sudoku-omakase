@@ -97,9 +97,7 @@ def testing_step(data_loader: torch.utils.data.DataLoader,
             
             # 2. Calculate loss and accuracy
             test_loss += loss_fn(test_pred, y).item()
-            test_acc += accuracy_fn(y_true=y,
-                y_pred=test_pred.argmax(dim=1), dev_mode=dev_mode # Go from logits -> pred labels
-            )
+            test_acc += accuracy_fn(y_true=y, y_pred=test_pred.argmax(dim=1))
         
         # Adjust metrics and print out
         test_loss /= len(data_loader)

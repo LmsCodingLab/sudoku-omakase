@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from timeit import default_timer as timer
 from pathlib import Path
-from src.models import BasicCNNModel, ResNet18_32
+from src.models import BasicCNNModel, ResNeXt_101, ResNet18_32
 from src.warmup import warmup
 from src.helpers.train_help import accuracy_fn, training_step, testing_step
 from src.helpers.dev_info import dev_show_message
@@ -18,12 +18,16 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   Returns:
   - None
   """
+  torch.cuda.empty_cache() # Clear GPU memory before starting training
   if model_type == "basic":
     dev_show_message(dev_mode, "Training BasicCNNModel...")
     model = BasicCNNModel(input_shape=1, output_shape=10)
   elif model_type == "resnet":
     dev_show_message(dev_mode, "Training ResNet18_32...")
     model = ResNet18_32(input_shape=1, output_shape=10)
+  elif model_type == "resnext":
+    dev_show_message(dev_mode, "Training ResNeXt101...")
+    model = ResNeXt_101(input_shape=1, output_shape=10)
   else:    
     raise ValueError(f"Unknown model type: {model_type}. Expected 'basic' or 'resnet'.")
 
@@ -36,7 +40,7 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   data_loader, test_loader = warmup(dev_mode=dev_mode)
 
   train_time_start = timer()
-  epochs = 8
+  epochs = 20
   for epoch in range(epochs):
     dev_show_message(dev_mode, f"Epoch: {epoch}")
     training_step(model=model,
@@ -53,6 +57,8 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
               accuracy_fn=accuracy_fn,
               device=device,# type: ignore[call-arg]
               dev_mode=dev_mode) 
+    Path("weights").mkdir(parents=True, exist_ok=True)
+    torch.save(model.state_dict(), f"weights/{model_type}_model{epoch}.pth")
     
   train_time_end = timer()
   dev_show_message(dev_mode, f"Total training time: {train_time_end - train_time_start:.3f} seconds")
@@ -60,7 +66,5 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   return model
 
 if __name__ == "__main__":
-  model = basic_training_loop(model_type="basic", dev_mode=True)
-  Path("weights").mkdir(parents=True, exist_ok=True)
-  torch.save(model.state_dict(), "weights/basic_cnn_model.pth")
+  model = basic_training_loop(model_type="resnext", dev_mode=True)
   

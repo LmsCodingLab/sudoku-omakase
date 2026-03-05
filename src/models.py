@@ -87,3 +87,22 @@ class ResNet18_32(nn.Module):
   
   def forward(self, x: torch.Tensor) -> torch.Tensor:
     return self.model(x)
+  
+class ResNeXt_101(nn.Module):
+  """
+  A ResNeXt-101 architecture adapted for 32x32 input images.
+  This model consists of grouped convolutions that allow for more efficient learning of features.
+
+  Parameters:
+  - input_shape: int, the number of channels in the input images (e.g., 1 for grayscale, 3 for RGB).
+  - output_shape: int, the number of classes for the output layer.
+  """
+  def __init__(self, input_shape: int, output_shape: int):
+    super(ResNeXt_101, self).__init__()
+    self.model = models.resnext101_32x8d(weights=None)
+    self.model.conv1 = nn.Conv2d(in_channels=input_shape, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
+    self.model.maxpool = nn.Identity()  # type: ignore[assignment] # Remove the max pooling layer to preserve spatial dimensions for 32x32 input
+    self.model.fc = nn.Linear(in_features=2048, out_features=output_shape)
+  
+  def forward(self, x: torch.Tensor) -> torch.Tensor:
+    return self.model(x)

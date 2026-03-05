@@ -1,6 +1,6 @@
 import numpy
 import torch
-from src.models import ResNet18_32, BasicCNNModel
+from src.models import ResNet18_32, BasicCNNModel, ResNeXt_101
 from src.helpers.test_model import test_model
 
 def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> int:
@@ -12,7 +12,10 @@ def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> i
     state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True)
   elif model_type == "resnet":
     model = ResNet18_32(1, 10)
-    state_dict = torch.load("weights/resnet18_32_model.pth", weights_only=True)
+    state_dict = torch.load("weights/resnet_model.pth", weights_only=True)
+  elif model_type == "resnext":
+    model = ResNeXt_101(1, 10)
+    state_dict = torch.load("weights/resnext_model.pth", weights_only=True)
   else:
     raise ValueError(f"Unknown model type: {model_type}. Expected 'basic' or 'resnet'.")
 

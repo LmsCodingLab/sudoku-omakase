@@ -148,11 +148,11 @@ def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = Fal
             batch = []
 
     result = np.array(numbers)
-    dev_show_message(dev_mode, f"Extracted numbers:\n{result}")
+    dev_show_message(True, f"Extracted numbers:\n{result}")
     return result
 
 if __name__ == "__main__":
     clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=False)
-    extract_numbers(ready_fields, model_type="resnet", dev_mode=False)
+    extract_numbers(ready_fields, model_type="resnext", dev_mode=False)

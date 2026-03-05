@@ -8,7 +8,7 @@ def test_model(data: numpy.ndarray, model_type: str) -> int:
     state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True)
   elif model_type == "resnet":
     model = ResNet18_32(1, 10)
-    state_dict = torch.load("weights/resnet18_32_model.pth", weights_only=True)
+    state_dict = torch.load("weights/resnet_model.pth", weights_only=True)
   else:
     raise ValueError(f"Unknown model type: {model_type}. Expected 'basic' or 'resnet'.")
   model.load_state_dict(state_dict)
@@ -20,7 +20,7 @@ def test_model(data: numpy.ndarray, model_type: str) -> int:
     input_data = input_data / 255.0
   
   with torch.no_grad():
-    THRESHOLD = 0.75
+    THRESHOLD = 0.70
     logits = model(input_data)
     probabilities = torch.softmax(logits,dim=1)
     max_prob, confedence = torch.max(probabilities, dim=1)
