@@ -136,6 +136,6 @@ def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike
     return resized_fields
 
 if __name__ == "__main__":
-    clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=True)
+    clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=True)

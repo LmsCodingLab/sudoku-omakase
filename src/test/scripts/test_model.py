@@ -1,6 +1,6 @@
 import numpy
 import torch
-from src.models import BasicCNNModel, ResNet18_32
+from src.models import ResNet18_32
 
 def manually_test_model(data: numpy.ndarray) -> int:
   model = ResNet18_32(1, 10)
@@ -15,8 +15,15 @@ def manually_test_model(data: numpy.ndarray) -> int:
     input_data = input_data / 255.0
   
   with torch.no_grad():
+    THRESHOLD = 0.65
     logits = model(input_data)
-    prediction = int(torch.argmax(logits, dim=1).item())
+    probabilities = torch.softmax(logits,dim=1)
+    max_prob, confedence = torch.max(probabilities, dim=1)
+    if max_prob.item() < THRESHOLD:
+      prediction = 0 # If the model is not confident enough, return 0 (which could represent "unknown" or "uncertain")
+      print(f"Model confidence {max_prob.item():.2f} is below the threshold of {THRESHOLD}. Returning prediction: {prediction}")
+    else:
+      prediction = int(confedence.item())
   
   print(prediction)
   return prediction
