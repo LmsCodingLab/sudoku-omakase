@@ -36,7 +36,7 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   data_loader, test_loader = warmup(dev_mode=dev_mode)
 
   train_time_start = timer()
-  epochs = 6
+  epochs = 8
   for epoch in range(epochs):
     dev_show_message(dev_mode, f"Epoch: {epoch}")
     training_step(model=model,
