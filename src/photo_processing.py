@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 from cv2.typing import MatLike
-from helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
+from src.helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
+from src.test.scripts.test_model import manually_test_basic_model, manually_test_resnet_model
 
 SIZE = 450
 
@@ -100,7 +101,42 @@ def _order_points(pts:  MatLike) -> npt.NDArray[np.float32]:
         pts[np.argmax(pts.sum(axis=1))] # bottom-right (largest sum of coordinates)
     ], dtype=np.float32)
 
-    return ordered_pts 
+    return ordered_pts
+
+def extract_fields(sudoku_image: MatLike, dev_mode: bool = False) -> list[MatLike]:
+    """
+    Extracts the 81 individual fields from the warped sudoku grid image.
+
+    Parameters:
+    - sudoku_image: np.ndarray, the warped sudoku grid image.
+
+    Returns:
+    - list of np.ndarray, the extracted field images.
+    """
+    fields = []
+    field_size = SIZE // 9
+    for row in range(9):
+        for col in range(9):
+            x_start, y_start = col * field_size, row * field_size
+            field = sudoku_image[y_start:y_start + field_size, x_start:x_start + field_size]
+            fields.append(field)
+            dev_show_image(dev_mode, f"Field ({row}, {col})", field)
+
+    return fields
+
+def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike]:
+    resized_fields = []
+    dev_show_message(dev_mode, "Now resizing")
+    for field in fields:
+        resized_field = cv2.resize(field, (32, 32), interpolation=cv2.INTER_AREA)
+        resized_fields.append(resized_field)
+        dev_show_image(dev_mode, "Downscaled", resized_field)
+        if dev_mode:
+            manually_test_resnet_model(resized_field)
+
+    return resized_fields
 
 if __name__ == "__main__":
-    extract_sudoku("test/test-sudoku.jpg", dev_mode=True)
+    clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=False)
+    fields = extract_fields(clean_sudoku, dev_mode=False)
+    ready_fields = resize_fields(fields, dev_mode=True)
