@@ -1,7 +1,6 @@
 import numpy as np
 import numpy.typing as npt
 
-# from src.solver import BLOCK_SIZE, GRID_SIZE
 
 BLOCK_SIZE = 3
 GRID_SIZE = 9
@@ -21,9 +20,11 @@ test_sudoku = np.array([
 def print_sudoku(grid: npt.NDArray[np.int_]) -> None:
     """
     Prints a Sudoku grid in a human-readable format.
-
     Parameters:
     - grid: np.ndarray, the Sudoku grid to be printed.
+
+    Returns:
+    - None
     """
     print('\n')
     for row_idx in range(GRID_SIZE):
@@ -38,4 +39,4 @@ def print_sudoku(grid: npt.NDArray[np.int_]) -> None:
     print('\n')
     
 if __name__ == "__main__":
-    print_sudoku(test_sudoku)
+    print_sudoku(test_sudoku)  
