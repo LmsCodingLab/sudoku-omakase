@@ -2,8 +2,8 @@ import torch
 from torch import nn
 from timeit import default_timer as timer
 from pathlib import Path
-from src.models import BasicCNNModel, ResNeXt_101, ResNet18_32
-from src.warmup import warmup
+from src.training.models import BasicCNNModel, ResNeXt_101, ResNet18_32
+from src.training.warmup import warmup
 from src.helpers.train_help import accuracy_fn, training_step, testing_step
 from src.helpers.dev_info import dev_show_message
 
@@ -12,11 +12,11 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   A basic training loop for training a CNN model on a dataset. This function initializes the model, sets up the loss function and optimizer, and runs the training and testing steps for a specified number of epochs.
 
   Parameters:
-  - model_type: str, the type of model to train ("basic" or "resnet").
+  - model_type: str, the type of model to train ("basic", "resnet", or "resnext").
   - dev_mode: bool, whether to print development messages and information during training.
 
   Returns:
-  - None
+  - nn.Module: The trained model after the training loop is completed.
   """
   torch.cuda.empty_cache() # Clear GPU memory before starting training
   if model_type == "basic":
@@ -29,7 +29,7 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
     dev_show_message(dev_mode, "Training ResNeXt101...")
     model = ResNeXt_101(input_shape=1, output_shape=10)
   else:    
-    raise ValueError(f"Unknown model type: {model_type}. Expected 'basic' or 'resnet'.")
+    raise ValueError(f"Unknown model type: {model_type}. Expected 'basic', 'resnet', or 'resnext'.")
 
   device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu" # type: ignore[assignment]
   model.to(device)
@@ -42,6 +42,7 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
 
   train_time_start = timer()
   epochs = 20
+  Path("weights").mkdir(parents=True, exist_ok=True)
   for epoch in range(epochs):
     dev_show_message(dev_mode, f"Epoch: {epoch}")
     training_step(model=model,
@@ -58,7 +59,6 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
               accuracy_fn=accuracy_fn,
               device=device,# type: ignore[call-arg]
               dev_mode=dev_mode) 
-    Path("weights").mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), f"weights/{model_type}_model{epoch}.pth")
     
   train_time_end = timer()
@@ -67,5 +67,5 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   return model
 
 if __name__ == "__main__":
-  model = basic_training_loop(model_type="resnext", dev_mode=True)
+  model = basic_training_loop(model_type="resnet", dev_mode=True)
   

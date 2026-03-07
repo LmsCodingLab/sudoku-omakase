@@ -129,11 +129,12 @@ def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike
     resized_fields = []
     dev_show_message(dev_mode, "Now resizing")
     for field in fields:
-        resized_field = cv2.resize(field, (32, 32), interpolation=cv2.INTER_AREA)
+        cropped_field = field[5:-5, 5:-5] # Crop 5 pixels from each side to remove grid lines
+        resized_field = cv2.resize(cropped_field, (32, 32), interpolation=cv2.INTER_AREA)
         resized_fields.append(resized_field)
         dev_show_image(dev_mode, "Downscaled", resized_field)
         if dev_mode:
-            test_model(resized_field, "resnet") # TODO
+            test_model(resized_field, "resnext") # ! Hardcoded model_type for testing purposes
 
     return resized_fields
 
@@ -148,11 +149,11 @@ def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = Fal
             batch = []
 
     result = np.array(numbers)
-    dev_show_message(True, f"Extracted numbers:\n{result}")
     return result
 
 if __name__ == "__main__":
     clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=False)
-    extract_numbers(ready_fields, model_type="resnext", dev_mode=False)
+    result = extract_numbers(ready_fields, model_type="resnext", dev_mode=False)
+    print(result)

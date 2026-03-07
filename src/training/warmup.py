@@ -9,6 +9,7 @@ def warmup(batch_size: int = 64, dev_mode: bool = False) -> tuple[DataLoader, Da
   Prepare the SVHN datasets for training by applying necessary transformations and creating DataLoader.
 
   Parameters:
+  - batch_size: int, the number of samples per batch to load.
   - dev_mode: bool, whether to show development messages
 
   Returns:
