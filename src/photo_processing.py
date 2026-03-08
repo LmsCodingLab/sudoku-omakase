@@ -3,7 +3,8 @@ import numpy as np
 import numpy.typing as npt
 from cv2.typing import MatLike
 from src.helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
-from src.test.scripts.test_model import manually_test_basic_model, manually_test_resnet_model
+from src.helpers.test_model import test_model
+from src.predictor import guess_num
 
 SIZE = 450
 
@@ -77,7 +78,7 @@ def extract_sudoku(image_path: str, dev_mode: bool = False) -> MatLike:
     dev_show_message(dev_mode, f"Destination Points: {pts2}")
 
     matrix = cv2.getPerspectiveTransform(src=pts1, dst=pts2)
-    warped = cv2.warpPerspective(src=thresh, M=matrix, dsize=(SIZE, SIZE))
+    warped = cv2.warpPerspective(src=grey_image, M=matrix, dsize=(SIZE, SIZE))
 
     dev_show_image(dev_mode, "Warped Sudoku", warped)
 
@@ -132,11 +133,26 @@ def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike
         resized_fields.append(resized_field)
         dev_show_image(dev_mode, "Downscaled", resized_field)
         if dev_mode:
-            manually_test_resnet_model(resized_field)
+            test_model(resized_field, "resnet") # TODO
 
     return resized_fields
+
+def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = False) -> npt.NDArray:
+    numbers = []
+    batch = []
+    for field in sudoku:
+        num = guess_num(data=field, model_type=model_type, dev_mode=dev_mode)
+        batch.append(num)
+        if len(batch) == 9:
+            numbers.append(batch)
+            batch = []
+
+    result = np.array(numbers)
+    dev_show_message(dev_mode, f"Extracted numbers:\n{result}")
+    return result
 
 if __name__ == "__main__":
     clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
-    ready_fields = resize_fields(fields, dev_mode=True)
+    ready_fields = resize_fields(fields, dev_mode=False)
+    extract_numbers(ready_fields, model_type="resnet", dev_mode=False)
