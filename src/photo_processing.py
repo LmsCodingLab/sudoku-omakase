@@ -148,7 +148,7 @@ def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike
 
     return resized_fields
 
-def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = False) -> npt.NDArray:
+def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = False) -> npt.NDArray[np.int8]:
     """
         Uses the specified model to predict the number in each field of the sudoku grid.
 
@@ -168,7 +168,7 @@ def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = Fal
             numbers.append(batch)
             batch = []
 
-    result = np.array(numbers)
+    result = np.array(numbers, dtype=np.int8)
     return result
 
 if __name__ == "__main__":
