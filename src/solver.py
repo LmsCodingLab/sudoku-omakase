@@ -44,11 +44,11 @@ def solve_sudoku(grid: npt.NDArray[np.int_]) -> bool:
     """Run Crook-style passes until no deduction rule  makes progress."""
     while True:
         markup = markup_sudoku(grid)
-        if fill_naked_single(grid, markup):
+        if apply_naked_singles(grid, markup):
             continue
-        if fill_hidden_single(grid, markup):
+        if apply_hidden_singles(grid, markup):
             continue
-        if eliminate_preemptive_sets(markup):
+        if apply_naked_subsets(markup):
             continue
         break
     return is_valid_sudoku(grid)
@@ -121,7 +121,7 @@ def markup_sudoku(grid: npt.NDArray[np.int_]) -> npt.NDArray[np.object_]:
     return markup
 
 
-def fill_naked_single(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def apply_naked_singles(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
     """Place digits where only one candidate remains in the cell."""
     change = False
     for row, column in np.ndindex(grid.shape):
@@ -131,30 +131,30 @@ def fill_naked_single(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_
     return change
     
 
-def fill_hidden_single(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def apply_hidden_singles(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
     """Search rows, columns, then blocks for digits with a single home."""
-    if _hidden_single_rows(grid, markup):
+    if _apply_hidden_single_rows(grid, markup):
         return True
-    if _hidden_single_columns(grid, markup):
+    if _apply_hidden_single_columns(grid, markup):
         return True
-    if _hidden_single_blocks(grid, markup):
+    if _apply_hidden_single_blocks(grid, markup):
         return True
     return False
 
 
-def eliminate_preemptive_sets(markup: npt.NDArray[np.object_]) -> bool:
+def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
     """Remove digits covered by naked pairs/triples/quads in every unit."""
     changed = False
-    if _preemptive_rows(markup):
+    if _apply_naked_subsets_rows(markup):
         changed = True
-    if _preemptive_columns(markup):
+    if _apply_naked_subsets_columns(markup):
         changed = True
-    if _preemptive_blocks(markup):
+    if _apply_naked_subsets_blocks(markup):
         changed = True
     return changed
 
 
-def _hidden_single_rows(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def _apply_hidden_single_rows(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
     """Find digits that appear in only one cell within any row."""
     for row_idx in range(GRID_SIZE):
         freq: Counter[int] = Counter()
@@ -176,7 +176,7 @@ def _hidden_single_rows(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.objec
     return False
 
 
-def _hidden_single_columns(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def _apply_hidden_single_columns(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
     """Find digits confined to a single cell within each column."""
     for col_idx in range(GRID_SIZE):
         freq: Counter[int] = Counter()
@@ -198,7 +198,7 @@ def _hidden_single_columns(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.ob
     return False
 
 
-def _hidden_single_blocks(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def _apply_hidden_single_blocks(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
     """Resolve digits that only fit one location inside a 3x3 block."""
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
@@ -222,7 +222,7 @@ def _hidden_single_blocks(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.obj
     return False
 
 
-def _preemptive_rows(markup: npt.NDArray[np.object_]) -> bool:
+def _apply_naked_subsets_rows(markup: npt.NDArray[np.object_]) -> bool:
     """Identify naked subsets along each row and cross out their digits elsewhere."""
     changed = False
     for row_idx in range(GRID_SIZE):
@@ -255,7 +255,7 @@ def _preemptive_rows(markup: npt.NDArray[np.object_]) -> bool:
     return changed
 
 
-def _preemptive_columns(markup: npt.NDArray[np.object_]) -> bool:
+def _apply_naked_subsets_columns(markup: npt.NDArray[np.object_]) -> bool:
     """Apply the same naked subset logic across columns."""
     changed = False
     for col_idx in range(GRID_SIZE):
@@ -288,7 +288,7 @@ def _preemptive_columns(markup: npt.NDArray[np.object_]) -> bool:
     return changed
 
 
-def _preemptive_blocks(markup: npt.NDArray[np.object_]) -> bool:
+def _apply_naked_subsets_blocks(markup: npt.NDArray[np.object_]) -> bool:
     """Detect naked subsets inside blocks and remove their digits from peers."""
     changed = False
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
