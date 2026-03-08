@@ -9,7 +9,6 @@ def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> i
   if dev_mode:
     return test_model(data=data, model_type=model_type)
 
-
   if model_type == "basic":
     model = BasicCNNModel(1, 10)
     state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True, map_location=device)
@@ -23,6 +22,7 @@ def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> i
     raise ValueError(f"Unknown model type: {model_type}. Expected 'basic', 'resnet', or 'resnext'.")
 
   model.load_state_dict(state_dict)
+  model.to(device)
   model.eval()
 
   input_data = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)

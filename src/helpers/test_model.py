@@ -2,20 +2,22 @@ import numpy
 import torch
 from src.training.models import ResNeXt_101, ResNet18_32, BasicCNNModel
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 def test_model(data: numpy.ndarray, model_type: str) -> int:
   if model_type == "basic":
     model = BasicCNNModel(1, 10)
-    state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True, map_location=torch.device('cpu'))
+    state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True, map_location=device)
   elif model_type == "resnet":
     model = ResNet18_32(1, 10)
-    state_dict = torch.load("weights/resnet_model.pth", weights_only=True, map_location=torch.device('cpu'))
+    state_dict = torch.load("weights/resnet_model.pth", weights_only=True, map_location=device)
   elif model_type == "resnext":
     model = ResNeXt_101(1, 10)
-    state_dict = torch.load("weights/resnext_model.pth", weights_only=True, map_location=torch.device('cpu'))
+    state_dict = torch.load("weights/resnext_model.pth", weights_only=True, map_location=device)
   else:
     raise ValueError(f"Unknown model type: {model_type}. Expected 'basic', 'resnet', or 'resnext'.")
   model.load_state_dict(state_dict)
-
+  model.to(device)
   model.eval()
 
   input_data = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)
