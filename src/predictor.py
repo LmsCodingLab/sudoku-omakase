@@ -30,11 +30,13 @@ def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> i
     input_data = input_data / 255.0
   
   with torch.no_grad():
-    THRESHOLD = 0.75
+    THRESHOLD = 1.1
     logits = model(input_data)
     probabilities = torch.softmax(logits,dim=1)
-    max_prob, predicted_class = torch.max(probabilities, dim=1)
-    if max_prob.item() < THRESHOLD:
+    dist = torch.distributions.Categorical(probs=probabilities)
+    ent = dist.entropy().item()
+    _, predicted_class = torch.max(probabilities, dim=1)
+    if ent > THRESHOLD:
       prediction = 0 # If the model is not confident enough, return 0 (which could represent "unknown" or "uncertain")
     else:
       prediction = int(predicted_class.item())

@@ -152,8 +152,8 @@ def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = Fal
     return result
 
 if __name__ == "__main__":
-    clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=False)
+    clean_sudoku = extract_sudoku("src/test/IMG_0120.jpg", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=False)
-    result = extract_numbers(ready_fields, model_type="resnext", dev_mode=False)
+    result = extract_numbers(ready_fields, model_type="resnet", dev_mode=False)
     print(result)
