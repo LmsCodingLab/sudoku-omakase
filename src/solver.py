@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.typing as npt
+import time
 from collections import Counter
 from itertools import combinations
 from helpers.printer import print_sudoku
@@ -31,8 +32,18 @@ EXAMPLE_GRID_HOLES = np.array([
     [7, 2, 6, 0, 0, 1, 0, 4, 0],
     [0, 0, 1, 4, 7, 0, 0, 5, 6]])
 
+EXAMPLE_GRID_SHORTZ = np.array([
+    [0, 3, 9, 5, 0, 0, 0, 0, 0],
+    [0, 0, 1, 8, 0, 9, 0, 7, 0],
+    [0, 0, 0, 0, 1, 0, 9, 0, 4],
+    [1, 0, 0, 4, 0, 0, 0, 0, 3],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 7, 0, 0, 0, 8, 6, 0],
+    [0, 0, 6, 7, 0, 8, 2, 0, 0],
+    [0, 1, 0, 0, 9, 0, 0, 0, 5],
+    [0, 0, 0, 0, 0, 1, 0, 0, 8]])
 
-def parse_sudoku() -> npt.NDArray[np.int_]:
+def parse_sudoku() -> npt.NDArray[np.int8]:
     """Read a Sudoku grid from stdin, expecting comma separated rows."""
     grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=int)
     for row_idx in range(GRID_SIZE):
@@ -40,21 +51,14 @@ def parse_sudoku() -> npt.NDArray[np.int_]:
         grid[row_idx] = list(map(int, raw_row.split(',')))
     return grid
 
-def solve_sudoku(grid: npt.NDArray[np.int_]) -> bool:
-    """Run Crook-style passes until no deduction rule  makes progress."""
-    while True:
-        markup = markup_sudoku(grid)
-        if apply_naked_singles(grid, markup):
-            continue
-        if apply_hidden_singles(grid, markup):
-            continue
-        if apply_naked_subsets(markup):
-            continue
-        break
+def solve_sudoku(grid: npt.NDArray[np.int8]) -> bool:
+    """Run Crook-style passes until no deduction rule makes progress."""
+    run_passes(grid)
+    
     return is_valid_sudoku(grid)
 
 
-def is_valid_sudoku(grid: npt.NDArray[np.int_]) -> bool:
+def is_valid_sudoku(grid: npt.NDArray[np.int8]) -> bool:
     """
     Checks if a given Sudoku grid is valid by ensuring that it contains only valid numbers and that each row, column, and 3x3 block contains unique values. 
 
@@ -72,19 +76,19 @@ def is_valid_sudoku(grid: npt.NDArray[np.int_]) -> bool:
 
 # Helper functions for Sudoku validation and solving
 
-def contains_only_valid_numbers(grid: npt.NDArray[np.int_]) -> bool:
+def contains_only_valid_numbers(grid: npt.NDArray[np.int8]) -> bool:
     return bool(np.all(np.isin(grid, valid_pool)))
 
 
-def rows_are_unique(grid: npt.NDArray[np.int_]) -> bool:
+def rows_are_unique(grid: npt.NDArray[np.int8]) -> bool:
     return all(len(np.unique(grid[row_idx, :])) == GRID_SIZE for row_idx in range(GRID_SIZE))
 
 
-def columns_are_unique(grid: npt.NDArray[np.int_]) -> bool:
+def columns_are_unique(grid: npt.NDArray[np.int8]) -> bool:
     return all(len(np.unique(grid[:, col_idx])) == GRID_SIZE for col_idx in range(GRID_SIZE))
 
 
-def blocks_are_unique(grid: npt.NDArray[np.int_]) -> bool:
+def blocks_are_unique(grid: npt.NDArray[np.int8]) -> bool:
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
             block = grid[start_row:start_row + BLOCK_SIZE, 
@@ -93,7 +97,7 @@ def blocks_are_unique(grid: npt.NDArray[np.int_]) -> bool:
                 return False
     return True
 
-def identify_candidates(grid: npt.NDArray[np.int_], row: int, column: int) -> set[int]:
+def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> set[int]:
     """finds candidates in a sudoku cell"""
     
     #check row and column
@@ -109,7 +113,7 @@ def identify_candidates(grid: npt.NDArray[np.int_], row: int, column: int) -> se
     return VALID_VALUES - used
 
 
-def markup_sudoku(grid: npt.NDArray[np.int_]) -> npt.NDArray[np.object_]:
+def markup_sudoku(grid: npt.NDArray[np.int8]) -> npt.NDArray[np.object_]:
     """returns a 2d list of sets of candidates for each cell in the sudoku grid"""
     markup = np.copy(grid).astype(object)
     
@@ -120,8 +124,30 @@ def markup_sudoku(grid: npt.NDArray[np.int_]) -> npt.NDArray[np.object_]:
 
     return markup
 
+def run_passes(grid: npt.NDArray[np.int8]) -> None:
+    markup = markup_sudoku(grid)
 
-def apply_naked_singles(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+    while True:
+        progress = False
+
+        if apply_naked_singles(grid, markup):
+            markup = markup_sudoku(grid)
+            progress = True
+            continue
+
+        if apply_hidden_singles(grid, markup):
+            markup = markup_sudoku(grid)
+            progress = True
+            continue
+
+        if apply_naked_subsets(markup):
+            progress = True
+            continue
+
+        if not progress:
+            break
+
+def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """Place digits where only one candidate remains in the cell."""
     change = False
     for row, column in np.ndindex(grid.shape):
@@ -131,7 +157,7 @@ def apply_naked_singles(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.objec
     return change
     
 
-def apply_hidden_singles(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def apply_hidden_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """Search rows, columns, then blocks for digits with a single home."""
     if _apply_hidden_single_rows(grid, markup):
         return True
@@ -154,7 +180,7 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
     return changed
 
 
-def _apply_hidden_single_rows(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """Find digits that appear in only one cell within any row."""
     for row_idx in range(GRID_SIZE):
         freq: Counter[int] = Counter()
@@ -176,7 +202,7 @@ def _apply_hidden_single_rows(grid: npt.NDArray[np.int_], markup: npt.NDArray[np
     return False
 
 
-def _apply_hidden_single_columns(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def _apply_hidden_single_columns(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """Find digits confined to a single cell within each column."""
     for col_idx in range(GRID_SIZE):
         freq: Counter[int] = Counter()
@@ -198,7 +224,7 @@ def _apply_hidden_single_columns(grid: npt.NDArray[np.int_], markup: npt.NDArray
     return False
 
 
-def _apply_hidden_single_blocks(grid: npt.NDArray[np.int_], markup: npt.NDArray[np.object_]) -> bool:
+def _apply_hidden_single_blocks(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """Resolve digits that only fit one location inside a 3x3 block."""
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
@@ -326,12 +352,13 @@ def _apply_naked_subsets_blocks(markup: npt.NDArray[np.object_]) -> bool:
 
 
 if __name__ == "__main__":
+    start = time.time()
     # sudoku_grid = parse_sudoku()
     print(f"sudoku_check: {is_valid_sudoku(EXAMPLE_GRID)}")
-    print(f'cell: {EXAMPLE_GRID_HOLES[0, 1]}')
-    print(f'candidates: {identify_candidates(EXAMPLE_GRID_HOLES, 0, 1)}')
-    print_sudoku(EXAMPLE_GRID_HOLES)
-    print(f'markup: {markup_sudoku(EXAMPLE_GRID_HOLES)}')
-    success = solve_sudoku(EXAMPLE_GRID_HOLES)
+    print_sudoku(EXAMPLE_GRID_SHORTZ)
+    print(f'markup: {markup_sudoku(EXAMPLE_GRID_SHORTZ)}')
+    success = solve_sudoku(EXAMPLE_GRID_SHORTZ)
     print(f'Solved: {success}')
-    print_sudoku(EXAMPLE_GRID_HOLES)
+    print_sudoku(EXAMPLE_GRID_SHORTZ)
+    end = time.time()
+    print(f"Execution time: {end - start:.4f} seconds")
