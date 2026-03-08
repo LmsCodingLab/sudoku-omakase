@@ -1,3 +1,4 @@
+import time
 import cv2
 import numpy as np
 import numpy.typing as npt
@@ -174,5 +175,8 @@ if __name__ == "__main__":
     clean_sudoku = extract_sudoku("src/test/IMG_0120.jpg", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=False)
+    start = time.time()
     result = extract_numbers(ready_fields, model_type="resnext", dev_mode=False)
-    print(result)
+    end = time.time()
+    print(f"Extracted numbers:\n{result}")
+    print(f"Time taken for number extraction: {end - start:.2f} seconds")
