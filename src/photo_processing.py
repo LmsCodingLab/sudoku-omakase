@@ -126,6 +126,15 @@ def extract_fields(sudoku_image: MatLike, dev_mode: bool = False) -> list[MatLik
     return fields
 
 def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike]:
+    """
+        Resizes the extracted field images to 32x32 pixels, which is the input size expected by the models.
+
+        Parameters:
+        - fields: list of np.ndarray, the extracted field images.
+
+        Returns:
+        - list of np.ndarray, the resized field images.
+    """
     resized_fields = []
     dev_show_message(dev_mode, "Now resizing")
     for field in fields:
@@ -139,6 +148,16 @@ def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike
     return resized_fields
 
 def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = False) -> npt.NDArray:
+    """
+        Uses the specified model to predict the number in each field of the sudoku grid.
+
+        Parameters:
+        - sudoku: list of np.ndarray, the list of field images.
+        - model_type: str, the type of model to use for prediction ("basic", "resnet", or "resnext").
+
+        Returns:
+        - np.ndarray, a 9x9 array representing the predicted numbers in the sudoku grid (0 for empty/uncertain fields).
+    """
     numbers = []
     batch = []
     for field in sudoku:
@@ -155,5 +174,5 @@ if __name__ == "__main__":
     clean_sudoku = extract_sudoku("src/test/IMG_0120.jpg", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=False)
-    result = extract_numbers(ready_fields, model_type="resnet", dev_mode=False)
+    result = extract_numbers(ready_fields, model_type="resnext", dev_mode=False)
     print(result)

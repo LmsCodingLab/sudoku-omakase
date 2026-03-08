@@ -15,6 +15,7 @@ class BasicCNNModel(nn.Module):
   - image_size: int, the height and width of the input images (default is 32, assuming square images).
   """
   def __init__(self, input_shape: int, output_shape: int, image_size: int = 32):
+    super().__init__()
     hidden_units = 10
     super(BasicCNNModel, self).__init__()
     self.conv_block1 = nn.Sequential(
