@@ -44,7 +44,15 @@ EXAMPLE_GRID_SHORTZ = np.array([
     [0, 0, 0, 0, 0, 1, 0, 0, 8]])
 
 def parse_sudoku() -> npt.NDArray[np.int8]:
-    """Read a Sudoku grid from stdin, expecting comma separated rows."""
+    """
+    Reads a Sudoku grid from standard input as comma-separated rows.
+
+    Parameters:
+    - None
+
+    Returns:
+    - np.ndarray, the populated Sudoku grid.
+    """
     grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=int)
     for row_idx in range(GRID_SIZE):
         raw_row = input(f"please enter row {row_idx + 1}: ")
@@ -52,7 +60,15 @@ def parse_sudoku() -> npt.NDArray[np.int8]:
     return grid
 
 def solve_sudoku(grid: npt.NDArray[np.int8]) -> bool:
-    """Run Crook-style passes until no deduction rule makes progress."""
+    """
+    Runs Crook-style passes until no deduction rule makes further progress.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to solve in place.
+
+    Returns:
+    - bool, True if the resulting grid is a valid Sudoku, False otherwise.
+    """
     run_passes(grid)
     
     return is_valid_sudoku(grid)
@@ -77,18 +93,54 @@ def is_valid_sudoku(grid: npt.NDArray[np.int8]) -> bool:
 # Helper functions for Sudoku validation and solving
 
 def contains_only_valid_numbers(grid: npt.NDArray[np.int8]) -> bool:
+    """
+    Checks whether every entry falls within the allowed digit range.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to inspect.
+
+    Returns:
+    - bool, True if all values are between 1 and 9, False otherwise.
+    """
     return bool(np.all(np.isin(grid, valid_pool)))
 
 
 def rows_are_unique(grid: npt.NDArray[np.int8]) -> bool:
+    """
+    Checks whether each row contains nine distinct digits.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to inspect.
+
+    Returns:
+    - bool, True if every row has unique values, False otherwise.
+    """
     return all(len(np.unique(grid[row_idx, :])) == GRID_SIZE for row_idx in range(GRID_SIZE))
 
 
 def columns_are_unique(grid: npt.NDArray[np.int8]) -> bool:
+    """
+    Checks whether each column contains nine distinct digits.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to inspect.
+
+    Returns:
+    - bool, True if every column has unique values, False otherwise.
+    """
     return all(len(np.unique(grid[:, col_idx])) == GRID_SIZE for col_idx in range(GRID_SIZE))
 
 
 def blocks_are_unique(grid: npt.NDArray[np.int8]) -> bool:
+    """
+    Checks whether each 3x3 block holds nine distinct digits.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to inspect.
+
+    Returns:
+    - bool, True if every block has unique values, False otherwise.
+    """
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
             block = grid[start_row:start_row + BLOCK_SIZE, 
@@ -98,7 +150,17 @@ def blocks_are_unique(grid: npt.NDArray[np.int8]) -> bool:
     return True
 
 def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> set[int]:
-    """finds candidates in a sudoku cell"""
+    """
+    Finds the set of digits that can legally occupy a given cell.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid used for context.
+    - row: int, the row index of the target cell.
+    - column: int, the column index of the target cell.
+
+    Returns:
+    - set[int], the remaining viable digits for the cell.
+    """
     
     #check row and column
     used = set(grid[row]) | {grid[i, column] for i in range(9)}
@@ -114,7 +176,15 @@ def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> se
 
 
 def markup_sudoku(grid: npt.NDArray[np.int8]) -> npt.NDArray[np.object_]:
-    """returns a 2d list of sets of candidates for each cell in the sudoku grid"""
+    """
+    Builds a grid of candidate sets for every unsolved cell.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to annotate.
+
+    Returns:
+    - np.ndarray, an object grid containing either digits or candidate sets.
+    """
     markup = np.copy(grid).astype(object)
     
     for row, col in np.ndindex(grid.shape): 
@@ -125,6 +195,15 @@ def markup_sudoku(grid: npt.NDArray[np.int8]) -> npt.NDArray[np.object_]:
     return markup
 
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
+    """
+    Applies deduction strategies repeatedly until no further progress occurs.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to mutate in place.
+
+    Returns:
+    - None
+    """
     markup = markup_sudoku(grid)
 
     while True:
@@ -148,7 +227,16 @@ def run_passes(grid: npt.NDArray[np.int8]) -> None:
             break
 
 def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
-    """Place digits where only one candidate remains in the cell."""
+    """
+    Places digits whenever a cell has exactly one candidate.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to mutate in place.
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if any placements were made, False otherwise.
+    """
     change = False
     for row, column in np.ndindex(grid.shape):
         if isinstance(markup[row, column], set) and len(markup[row, column]) == 1:
@@ -158,7 +246,16 @@ def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.objec
     
 
 def apply_hidden_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
-    """Search rows, columns, then blocks for digits with a single home."""
+    """
+    Searches rows, columns, and blocks for digits with a single viable location.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to mutate in place.
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if any digits were placed, False otherwise.
+    """
     if _apply_hidden_single_rows(grid, markup):
         return True
     if _apply_hidden_single_columns(grid, markup):
@@ -169,7 +266,15 @@ def apply_hidden_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.obje
 
 
 def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
-    """Remove digits covered by naked pairs/triples/quads in every unit."""
+    """
+    Removes digits covered by naked pairs, triples, or quads in each unit.
+
+    Parameters:
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if any candidates were removed, False otherwise.
+    """
     changed = False
     if _apply_naked_subsets_rows(markup):
         changed = True
@@ -181,7 +286,16 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
 
 
 def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
-    """Find digits that appear in only one cell within any row."""
+    """
+    Finds digits that appear in only one candidate cell within a row.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to mutate in place.
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if a digit was placed, False otherwise.
+    """
     for row_idx in range(GRID_SIZE):
         freq: Counter[int] = Counter()
         last_col: dict[int, int] = {}
@@ -203,7 +317,16 @@ def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np
 
 
 def _apply_hidden_single_columns(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
-    """Find digits confined to a single cell within each column."""
+    """
+    Finds digits confined to a single candidate cell within a column.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to mutate in place.
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if a digit was placed, False otherwise.
+    """
     for col_idx in range(GRID_SIZE):
         freq: Counter[int] = Counter()
         last_row: dict[int, int] = {}
@@ -225,7 +348,16 @@ def _apply_hidden_single_columns(grid: npt.NDArray[np.int8], markup: npt.NDArray
 
 
 def _apply_hidden_single_blocks(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
-    """Resolve digits that only fit one location inside a 3x3 block."""
+    """
+    Resolves digits that fit only one location inside a 3x3 block.
+
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to mutate in place.
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if a digit was placed, False otherwise.
+    """
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
             freq: Counter[int] = Counter()
@@ -249,7 +381,15 @@ def _apply_hidden_single_blocks(grid: npt.NDArray[np.int8], markup: npt.NDArray[
 
 
 def _apply_naked_subsets_rows(markup: npt.NDArray[np.object_]) -> bool:
-    """Identify naked subsets along each row and cross out their digits elsewhere."""
+    """
+    Identifies naked subsets along each row and removes their digits from peers.
+
+    Parameters:
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if any candidates were removed, False otherwise.
+    """
     changed = False
     for row_idx in range(GRID_SIZE):
         candidate_cells: list[tuple[int, set[int]]] = []
@@ -282,7 +422,15 @@ def _apply_naked_subsets_rows(markup: npt.NDArray[np.object_]) -> bool:
 
 
 def _apply_naked_subsets_columns(markup: npt.NDArray[np.object_]) -> bool:
-    """Apply the same naked subset logic across columns."""
+    """
+    Identifies naked subsets along each column and removes their digits from peers.
+
+    Parameters:
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if any candidates were removed, False otherwise.
+    """
     changed = False
     for col_idx in range(GRID_SIZE):
         candidate_cells: list[tuple[int, set[int]]] = []
@@ -315,7 +463,15 @@ def _apply_naked_subsets_columns(markup: npt.NDArray[np.object_]) -> bool:
 
 
 def _apply_naked_subsets_blocks(markup: npt.NDArray[np.object_]) -> bool:
-    """Detect naked subsets inside blocks and remove their digits from peers."""
+    """
+    Detects naked subsets within each block and removes their digits from peers.
+
+    Parameters:
+    - markup: np.ndarray, the candidate grid aligned with the Sudoku grid.
+
+    Returns:
+    - bool, True if any candidates were removed, False otherwise.
+    """
     changed = False
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
