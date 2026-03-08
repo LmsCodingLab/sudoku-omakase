@@ -1,3 +1,4 @@
+import time
 import cv2
 import numpy as np
 import numpy.typing as npt
@@ -126,18 +127,38 @@ def extract_fields(sudoku_image: MatLike, dev_mode: bool = False) -> list[MatLik
     return fields
 
 def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike]:
+    """
+        Resizes the extracted field images to 32x32 pixels, which is the input size expected by the models.
+
+        Parameters:
+        - fields: list of np.ndarray, the extracted field images.
+
+        Returns:
+        - list of np.ndarray, the resized field images.
+    """
     resized_fields = []
     dev_show_message(dev_mode, "Now resizing")
     for field in fields:
-        resized_field = cv2.resize(field, (32, 32), interpolation=cv2.INTER_AREA)
+        cropped_field = field[5:-5, 5:-5] # Crop 5 pixels from each side to remove grid lines
+        resized_field = cv2.resize(cropped_field, (32, 32), interpolation=cv2.INTER_AREA)
         resized_fields.append(resized_field)
         dev_show_image(dev_mode, "Downscaled", resized_field)
         if dev_mode:
-            test_model(resized_field, "resnet") # TODO
+            test_model(resized_field, "resnext") # ! Hardcoded model_type for testing purposes
 
     return resized_fields
 
 def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = False) -> npt.NDArray:
+    """
+        Uses the specified model to predict the number in each field of the sudoku grid.
+
+        Parameters:
+        - sudoku: list of np.ndarray, the list of field images.
+        - model_type: str, the type of model to use for prediction ("basic", "resnet", or "resnext").
+
+        Returns:
+        - np.ndarray, a 9x9 array representing the predicted numbers in the sudoku grid (0 for empty/uncertain fields).
+    """
     numbers = []
     batch = []
     for field in sudoku:
@@ -148,11 +169,14 @@ def extract_numbers(sudoku: list[MatLike], model_type: str, dev_mode: bool = Fal
             batch = []
 
     result = np.array(numbers)
-    dev_show_message(dev_mode, f"Extracted numbers:\n{result}")
     return result
 
 if __name__ == "__main__":
-    clean_sudoku = extract_sudoku("src/test/sudoku_easy.png", dev_mode=False)
+    clean_sudoku = extract_sudoku("src/test/IMG_0120.jpg", dev_mode=False)
     fields = extract_fields(clean_sudoku, dev_mode=False)
     ready_fields = resize_fields(fields, dev_mode=False)
-    extract_numbers(ready_fields, model_type="resnet", dev_mode=False)
+    start = time.time()
+    result = extract_numbers(ready_fields, model_type="resnext", dev_mode=False)
+    end = time.time()
+    print(f"Extracted numbers:\n{result}")
+    print(f"Time taken for number extraction: {end - start:.2f} seconds")

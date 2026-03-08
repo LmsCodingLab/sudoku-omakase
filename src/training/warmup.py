@@ -1,18 +1,21 @@
+import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, ConcatDataset
 from src.helpers.dev_info import dev_show_message
 
 # Preparing the data for training or in other words warming up ;)
-def warmup(dev_mode: bool = False) -> tuple[DataLoader, DataLoader]:
+def warmup(batch_size: int = 64, dev_mode: bool = False) -> tuple[DataLoader, DataLoader]:
   """
   Prepare the SVHN datasets for training by applying necessary transformations and creating DataLoader.
 
   Parameters:
+  - batch_size: int, the number of samples per batch to load.
   - dev_mode: bool, whether to show development messages
 
   Returns:
   - tuple[DataLoader, DataLoader]: A tuple containing the training and test DataLoaders for the SVHN dataset.
   """
+
 
   svhn_transform = transforms.Compose([
     transforms.Grayscale(),
@@ -24,8 +27,19 @@ def warmup(dev_mode: bool = False) -> tuple[DataLoader, DataLoader]:
   svhn_test = datasets.SVHN(root="./datasets", split="test", download=True, transform=svhn_transform)
 
 
-  data_loader = DataLoader(dataset=svhn_train, batch_size=64, shuffle=True)
-  test_loader = DataLoader(dataset=svhn_test, batch_size=64, shuffle=False)
+  use_cuda = torch.cuda.is_available()
+  data_loader = DataLoader(
+    dataset=svhn_train,
+    batch_size=batch_size,
+    shuffle=True,
+    pin_memory=use_cuda
+  )
+  test_loader = DataLoader(
+    dataset=svhn_test,
+    batch_size=batch_size,
+    shuffle=False,
+    pin_memory=use_cuda
+  )
 
   dev_show_message(dev_mode, f"Data loaders created with {len(svhn_train)} training samples and {len(svhn_test)} test samples.")
 
