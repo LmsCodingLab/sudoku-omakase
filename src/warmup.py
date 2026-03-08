@@ -14,7 +14,6 @@ def warmup(dev_mode: bool = False) -> tuple[DataLoader, DataLoader]:
   - tuple[DataLoader, DataLoader]: A tuple containing the training and test DataLoaders for the SVHN dataset.
   """
 
-
   svhn_transform = transforms.Compose([
     transforms.Grayscale(),
     transforms.ToTensor(),
