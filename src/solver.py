@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 from collections import Counter
+from itertools import combinations
 from helpers.printer import print_sudoku
 
 
@@ -225,22 +226,30 @@ def _preemptive_rows(markup: npt.NDArray[np.object_]) -> bool:
     """Identify naked subsets along each row and cross out their digits elsewhere."""
     changed = False
     for row_idx in range(GRID_SIZE):
-        patterns: dict[frozenset[int], list[int]] = {}
+        candidate_cells: list[tuple[int, set[int]]] = []
+        union_vals: set[int] = set()
         for col_idx in range(GRID_SIZE):
             cell = markup[row_idx, col_idx]
             if isinstance(cell, set) and 1 < len(cell) < GRID_SIZE:
-                key = frozenset(cell)
-                patterns.setdefault(key, []).append(col_idx)
-        for pattern, cols in patterns.items():
-            if len(pattern) == len(cols) and len(cols) > 1:
-                member_cols = set(cols)
+                candidate_cells.append((col_idx, cell))
+                union_vals.update(cell)
+        if len(candidate_cells) < 2:
+            continue
+        max_subset = min(len(union_vals), GRID_SIZE - 1)
+        for subset_size in range(2, max_subset + 1):
+            for subset in combinations(union_vals, subset_size):
+                subset_set = set(subset)
+                matching_cols = [col for col, cell in candidate_cells if cell.issubset(subset_set)]
+                if len(matching_cols) != subset_size or len(matching_cols) <= 1:
+                    continue
+                member_cols = set(matching_cols)
                 for col_idx in range(GRID_SIZE):
                     if col_idx in member_cols:
                         continue
                     cell = markup[row_idx, col_idx]
                     if isinstance(cell, set):
                         before = len(cell)
-                        cell.difference_update(pattern)
+                        cell.difference_update(subset_set)
                         if len(cell) != before:
                             changed = True
     return changed
@@ -250,22 +259,30 @@ def _preemptive_columns(markup: npt.NDArray[np.object_]) -> bool:
     """Apply the same naked subset logic across columns."""
     changed = False
     for col_idx in range(GRID_SIZE):
-        patterns: dict[frozenset[int], list[int]] = {}
+        candidate_cells: list[tuple[int, set[int]]] = []
+        union_vals: set[int] = set()
         for row_idx in range(GRID_SIZE):
             cell = markup[row_idx, col_idx]
             if isinstance(cell, set) and 1 < len(cell) < GRID_SIZE:
-                key = frozenset(cell)
-                patterns.setdefault(key, []).append(row_idx)
-        for pattern, rows in patterns.items():
-            if len(pattern) == len(rows) and len(rows) > 1:
-                member_rows = set(rows)
+                candidate_cells.append((row_idx, cell))
+                union_vals.update(cell)
+        if len(candidate_cells) < 2:
+            continue
+        max_subset = min(len(union_vals), GRID_SIZE - 1)
+        for subset_size in range(2, max_subset + 1):
+            for subset in combinations(union_vals, subset_size):
+                subset_set = set(subset)
+                matching_rows = [row for row, cell in candidate_cells if cell.issubset(subset_set)]
+                if len(matching_rows) != subset_size or len(matching_rows) <= 1:
+                    continue
+                member_rows = set(matching_rows)
                 for row_idx in range(GRID_SIZE):
                     if row_idx in member_rows:
                         continue
                     cell = markup[row_idx, col_idx]
                     if isinstance(cell, set):
                         before = len(cell)
-                        cell.difference_update(pattern)
+                        cell.difference_update(subset_set)
                         if len(cell) != before:
                             changed = True
     return changed
@@ -276,16 +293,24 @@ def _preemptive_blocks(markup: npt.NDArray[np.object_]) -> bool:
     changed = False
     for start_row in range(0, GRID_SIZE, BLOCK_SIZE):
         for start_col in range(0, GRID_SIZE, BLOCK_SIZE):
-            patterns: dict[frozenset[int], list[tuple[int, int]]] = {}
+            candidate_cells: list[tuple[tuple[int, int], set[int]]] = []
+            union_vals: set[int] = set()
             for row_idx in range(start_row, start_row + BLOCK_SIZE):
                 for col_idx in range(start_col, start_col + BLOCK_SIZE):
                     cell = markup[row_idx, col_idx]
                     if isinstance(cell, set) and 1 < len(cell) < GRID_SIZE:
-                        key = frozenset(cell)
-                        patterns.setdefault(key, []).append((row_idx, col_idx))
-            for pattern, coords in patterns.items():
-                if len(pattern) == len(coords) and len(coords) > 1:
-                    members = set(coords)
+                        candidate_cells.append(((row_idx, col_idx), cell))
+                        union_vals.update(cell)
+            if len(candidate_cells) < 2:
+                continue
+            max_subset = min(len(union_vals), GRID_SIZE - 1)
+            for subset_size in range(2, max_subset + 1):
+                for subset in combinations(union_vals, subset_size):
+                    subset_set = set(subset)
+                    matching_coords = [coord for coord, cell in candidate_cells if cell.issubset(subset_set)]
+                    if len(matching_coords) != subset_size or len(matching_coords) <= 1:
+                        continue
+                    members = set(matching_coords)
                     for row_idx in range(start_row, start_row + BLOCK_SIZE):
                         for col_idx in range(start_col, start_col + BLOCK_SIZE):
                             if (row_idx, col_idx) in members:
@@ -293,7 +318,7 @@ def _preemptive_blocks(markup: npt.NDArray[np.object_]) -> bool:
                             cell = markup[row_idx, col_idx]
                             if isinstance(cell, set):
                                 before = len(cell)
-                                cell.difference_update(pattern)
+                                cell.difference_update(subset_set)
                                 if len(cell) != before:
                                     changed = True
     return changed
