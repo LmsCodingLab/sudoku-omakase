@@ -3,19 +3,22 @@ import torch
 from src.training.models import ResNet18_32, BasicCNNModel, ResNeXt_101
 from src.helpers.test_model import test_model
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> int:
   if dev_mode:
     return test_model(data=data, model_type=model_type)
 
+
   if model_type == "basic":
     model = BasicCNNModel(1, 10)
-    state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True)
+    state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True, map_location=device)
   elif model_type == "resnet":
     model = ResNet18_32(1, 10)
-    state_dict = torch.load("weights/resnet_model.pth", weights_only=True)
+    state_dict = torch.load("weights/resnet_model.pth", weights_only=True, map_location=device)
   elif model_type == "resnext":
     model = ResNeXt_101(1, 10)
-    state_dict = torch.load("weights/resnext_model.pth", weights_only=True)
+    state_dict = torch.load("weights/resnext_model.pth", weights_only=True, map_location=device)
   else:
     raise ValueError(f"Unknown model type: {model_type}. Expected 'basic', 'resnet', or 'resnext'.")
 
