@@ -82,6 +82,11 @@ def solve_sudoku(grid: npt.NDArray[np.int8]) -> bool:
     - bool, True if the resulting grid is a valid Sudoku, False otherwise.
     """
     run_passes(grid)
+    has_zero = np.any(grid == 0)
+
+    if has_zero:
+        if not _dfs(grid):
+            return False            
     
     return is_valid_sudoku(grid)
 
@@ -543,5 +548,5 @@ def _apply_naked_subsets_blocks(markup: npt.NDArray[np.object_]) -> bool:
 
 
 if __name__ == "__main__":
-    print(_dfs(EXAMPLE_GRID_HOLES))
-    print_sudoku(EXAMPLE_GRID_HOLES)
+    print(solve_sudoku(EXAMPLE_GRID_X_WING))
+    print_sudoku(EXAMPLE_GRID_X_WING)
