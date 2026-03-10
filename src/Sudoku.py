@@ -8,11 +8,13 @@ from src.solver import solve_sudoku
 class Sudoku:
     _GRID_SIZE = 9
     _BLOCK_SIZE = 3
-    def __init__(self):
+    def __init__(self, dev_mode: bool = False) -> None:
         self.source: str = ""
         self.solved: bool = False
         self.grid: npt.NDArray[np.int8] = np.zeros((self._GRID_SIZE, self._GRID_SIZE), dtype=np.int8)
         self.original_grid: npt.NDArray[np.int8] = np.zeros((self._GRID_SIZE, self._GRID_SIZE), dtype=np.int8)
+        self.dev_mode: bool = dev_mode
+        self.model_type: str = "resnet"
 
     def __str__(self) -> str:
         output = 'Sudoku From: ' + str(self.source) + '\n'
@@ -29,17 +31,18 @@ class Sudoku:
     def is_solved(self) -> bool:
         return self.solved
     
-    def from_photo(self, source: str) -> npt.NDArray[np.int8]:
+    def from_photo(self, source: str, model_type: str = "resnet") -> npt.NDArray[np.int8]:
         p = Path(source).expanduser()
         if not p.is_file():
             raise FileNotFoundError(f"File not found: {source}")
         self.source = source
         self.solved = False
+        self.model_type = model_type
 
-        clean_sudoku = extract_sudoku(source, dev_mode=False)
-        fields = extract_fields(clean_sudoku, dev_mode=False)
-        ready_fields = resize_fields(fields, dev_mode=False)
-        self.grid = extract_numbers(ready_fields, model_type="resnext", dev_mode=False)
+        clean_sudoku = extract_sudoku(source, dev_mode=self.dev_mode)
+        fields = extract_fields(clean_sudoku, dev_mode=self.dev_mode)
+        ready_fields = resize_fields(fields, dev_mode=self.dev_mode)
+        self.grid = extract_numbers(ready_fields, model_type=self.model_type, dev_mode=self.dev_mode)
 
         self.original_grid = self.grid.copy()
 
