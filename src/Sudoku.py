@@ -4,7 +4,6 @@ import numpy.typing as npt
 from src.photo_processing import extract_fields, extract_numbers, extract_sudoku, resize_fields
 from src.solver import solve_sudoku
 
-#TODO implement dev_mode
 class Sudoku:
     _GRID_SIZE = 9
     _BLOCK_SIZE = 3
