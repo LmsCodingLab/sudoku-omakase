@@ -36,9 +36,12 @@ class Sudoku:
         output += 'Solved: ' + str(self.solved)
         return output
 
-    def get_grid(self) -> npt.NDArray[np.int8]:
-        return self.grid.copy()
+    def get_original_grid(self) -> npt.NDArray[np.int8]:
+        return self.original_grid.copy()
     
+    def get_current_grid(self) -> npt.NDArray[np.int8]:
+        return self.grid.copy()
+
     def is_solved(self) -> bool:
         return self.solved
     
