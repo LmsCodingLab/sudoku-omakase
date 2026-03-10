@@ -303,7 +303,7 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
 
 def _dfs(grid: npt.NDArray[np.int8]) -> bool:
     markup = markup_sudoku(grid)
-    empty_cells = [(row, column) for row, column in np.ndindex(9, 9) if grid[row, column] == 0]
+    empty_cells = [(row, column) for row, column in np.ndindex(GRID_SIZE, GRID_SIZE) if grid[row, column] == 0]
     if len(empty_cells) == 0:
         return True
     
