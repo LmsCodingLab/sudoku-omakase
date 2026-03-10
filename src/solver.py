@@ -71,6 +71,7 @@ def parse_sudoku() -> npt.NDArray[np.int8]:
         grid[row_idx] = list(map(int, raw_row.split(',')))
     return grid
 
+
 def solve_sudoku(grid: npt.NDArray[np.int8]) -> bool:
     """
     Runs Crook-style passes until no deduction rule makes further progress.
@@ -166,6 +167,7 @@ def blocks_are_unique(grid: npt.NDArray[np.int8]) -> bool:
                 return False
     return True
 
+
 def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> set[int]:
     """
     Finds the set of digits that can legally occupy a given cell.
@@ -211,6 +213,7 @@ def markup_sudoku(grid: npt.NDArray[np.int8]) -> npt.NDArray[np.object_]:
 
     return markup
 
+
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
     """
     Applies deduction strategies repeatedly until no further progress occurs.
@@ -242,6 +245,7 @@ def run_passes(grid: npt.NDArray[np.int8]) -> None:
 
         if not progress:
             break
+
 
 def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
@@ -301,7 +305,17 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
         changed = True
     return changed
 
+
 def _dfs(grid: npt.NDArray[np.int8]) -> bool:
+    """
+    Solves the Sudoku puzzle using backtracking search.
+    
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to solve in place.
+    
+    Returns:
+        - bool, True if a solution was found, False otherwise.
+    """
     markup = markup_sudoku(grid)
     empty_cells = [(row, column) for row, column in np.ndindex(GRID_SIZE, GRID_SIZE) if grid[row, column] == 0]
     if len(empty_cells) == 0:
@@ -322,7 +336,6 @@ def _dfs(grid: npt.NDArray[np.int8]) -> bool:
         grid[row, column] = 0
         
     return False
-
 
 
 def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
