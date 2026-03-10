@@ -5,9 +5,21 @@ from src.photo_processing import extract_fields, extract_numbers, extract_sudoku
 from src.solver import solve_sudoku
 
 class Sudoku:
+    """
+        A class representing a Sudoku puzzle, with methods to extract the grid from a photo, solve the puzzle, and display the current state of the grid.
+    """
     _GRID_SIZE = 9
     _BLOCK_SIZE = 3
     def __init__(self, dev_mode: bool = False) -> None:
+        """
+            Initializes a new Sudoku instance with an empty grid and default values for source, solved status, and model type.
+
+            Parameters:
+            - dev_mode (bool): A flag to indicate whether to enable development mode for debugging purposes. Default is False.
+
+            Returns:
+            - None
+        """
         self.source: str = ""
         self.solved: bool = False
         self.grid: npt.NDArray[np.int8] = np.zeros((self._GRID_SIZE, self._GRID_SIZE), dtype=np.int8)
@@ -31,6 +43,13 @@ class Sudoku:
         return self.solved
     
     def from_photo(self, source: str, model_type: str = "resnet") -> npt.NDArray[np.int8]:
+        """
+            Extracts a Sudoku grid from a photo, processes it, and updates the instance's grid and original_grid attributes.
+
+            Parameters:
+            - source (str): The file path to the photo containing the Sudoku puzzle.
+            - model_type (str): The type of model to use for number extraction. Default is "resnet".
+        """
         p = Path(source).expanduser()
         if not p.is_file():
             raise FileNotFoundError(f"File not found: {source}")
@@ -48,6 +67,15 @@ class Sudoku:
         return self.grid.copy()
     
     def from_grid(self, grid: npt.NDArray[np.int8]) -> None:
+        """
+            Initializes the Sudoku instance with a given grid, validating the input for correct shape and value range.
+
+            Parameters:
+            - grid (npt.NDArray[np.int8]): A 9x9 numpy array representing the Sudoku grid, where empty cells are represented by 0 and filled cells contain values from 1 to 9.
+
+            Returns:
+            - None
+        """
         if grid.shape != (self._GRID_SIZE, self._GRID_SIZE):
             raise ValueError(f"Grid must be of shape ({self._GRID_SIZE}, {self._GRID_SIZE})")
         if not np.all((grid >= 0) & (grid <= self._GRID_SIZE)):
@@ -59,6 +87,13 @@ class Sudoku:
         self.original_grid = grid.copy()
 
     def solve(self) -> bool:
+        """
+            Solves the Sudoku puzzle using a backtracking algorithm. Updates the grid with the solved state and sets the solved attribute to True if a solution is found.
+
+            Returns:
+            - bool: True if the puzzle was solved successfully, False otherwise.
+
+        """
         self.solved = solve_sudoku(self.grid)
         return self.solved
     
