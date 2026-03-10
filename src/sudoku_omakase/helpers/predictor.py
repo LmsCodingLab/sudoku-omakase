@@ -1,8 +1,8 @@
 from functools import cache
 import numpy
 import torch
-from src.training.models import ResNet18_32, BasicCNNModel, ResNeXt_101
-from src.helpers.test_model import test_model
+from src.sudoku_omakase.models import ResNet18_32, BasicCNNModel, ResNeXt_101
+from tests.test_scripts.test_model import test_model
 
 
 def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> int:

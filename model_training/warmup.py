@@ -1,7 +1,7 @@
 import torch
 from torchvision import datasets, transforms
-from torch.utils.data import DataLoader, ConcatDataset
-from src.helpers.dev_info import dev_show_message
+from torch.utils.data import DataLoader
+from src.sudoku_omakase.helpers.dev_info import dev_show_message
 
 # Preparing the data for training or in other words warming up ;)
 def warmup(batch_size: int = 64, dev_mode: bool = False) -> tuple[DataLoader, DataLoader]:
@@ -23,8 +23,8 @@ def warmup(batch_size: int = 64, dev_mode: bool = False) -> tuple[DataLoader, Da
     transforms.Normalize(mean=(0.5,), std=(0.5,))
   ])
 
-  svhn_train = datasets.SVHN(root="./datasets", split="train", download=True, transform=svhn_transform)
-  svhn_test = datasets.SVHN(root="./datasets", split="test", download=True, transform=svhn_transform)
+  svhn_train = datasets.SVHN(root="./model_training/datasets", split="train", download=True, transform=svhn_transform)
+  svhn_test = datasets.SVHN(root="./model_training/datasets", split="test", download=True, transform=svhn_transform)
 
 
   use_cuda = torch.cuda.is_available()

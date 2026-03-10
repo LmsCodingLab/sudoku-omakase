@@ -1,5 +1,5 @@
 import torch
-from src.helpers.dev_info import dev_show_message
+from src.sudoku_omakase.helpers.dev_info import dev_show_message
 
 def accuracy_fn(y_true: torch.Tensor, y_pred: torch.Tensor) -> float:
     """Calculates accuracy between truth labels and predictions.
