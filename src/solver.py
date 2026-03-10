@@ -70,6 +70,7 @@ def parse_sudoku() -> npt.NDArray[np.int8]:
         grid[row_idx] = list(map(int, raw_row.split(',')))
     return grid
 
+
 def solve_sudoku(grid: npt.NDArray[np.int8]) -> bool:
     """
     Runs Crook-style passes until no deduction rule makes further progress.
@@ -165,6 +166,7 @@ def blocks_are_unique(grid: npt.NDArray[np.int8]) -> bool:
                 return False
     return True
 
+
 def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> set[int]:
     """
     Finds the set of digits that can legally occupy a given cell.
@@ -210,6 +212,7 @@ def markup_sudoku(grid: npt.NDArray[np.int8]) -> npt.NDArray[np.object_]:
 
     return markup
 
+
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
     """
     Applies deduction strategies repeatedly until no further progress occurs.
@@ -241,6 +244,7 @@ def run_passes(grid: npt.NDArray[np.int8]) -> None:
 
         if not progress:
             break
+
 
 def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
