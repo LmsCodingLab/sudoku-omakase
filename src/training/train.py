@@ -31,7 +31,7 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
   else:    
     raise ValueError(f"Unknown model type: {model_type}. Expected 'basic', 'resnet', or 'resnext'.")
 
-  device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu" # type: ignore[assignment]
+  device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   model.to(device)
   dev_show_message(dev_mode, f"Using device: {device}")
   
@@ -50,14 +50,14 @@ def basic_training_loop(model_type: str, dev_mode: bool = False) -> nn.Module:
                   loss_fn=loss_fn,
                   optimizer=optimizer,
                   accuracy_fn=accuracy_fn,
-                  device=device, # type: ignore[call-arg]
+                  device=device, 
                   dev_mode=dev_mode) 
     
     testing_step(model=model,
               data_loader=test_loader,
               loss_fn=loss_fn,
               accuracy_fn=accuracy_fn,
-              device=device,# type: ignore[call-arg]
+              device=device,
               dev_mode=dev_mode) 
     torch.save(model.state_dict(), f"weights/{model_type}_model{epoch}.pth")
     

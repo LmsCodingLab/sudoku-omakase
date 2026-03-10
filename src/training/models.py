@@ -17,7 +17,6 @@ class BasicCNNModel(nn.Module):
   def __init__(self, input_shape: int, output_shape: int, image_size: int = 32):
     super().__init__()
     hidden_units = 10
-    super(BasicCNNModel, self).__init__()
     self.conv_block1 = nn.Sequential(
       nn.Conv2d(in_channels=input_shape, 
                 out_channels=hidden_units, 

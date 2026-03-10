@@ -1,6 +1,6 @@
 import numpy
 import torch
-from src.models import ResNet18_32, BasicCNNModel
+from src.training.models import ResNet18_32, BasicCNNModel
 
 def manually_test_basic_model(data: numpy.ndarray) -> int:
   model = BasicCNNModel(1, 10)
