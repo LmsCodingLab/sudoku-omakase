@@ -43,6 +43,18 @@ EXAMPLE_GRID_SHORTZ = np.array([
     [0, 1, 0, 0, 9, 0, 0, 0, 5],
     [0, 0, 0, 0, 0, 1, 0, 0, 8]])
 
+EXAMPLE_GRID_X_WING = np.array([
+    [0, 0, 0, 2, 0, 0, 0, 6, 3],
+    [3, 0, 0, 0, 0, 5, 4, 0, 1],
+    [0, 0, 1, 0, 0, 3, 9, 8, 0],
+    [0, 0, 0, 0, 0, 0, 0, 9, 0],
+    [0, 0, 0, 5, 3, 8, 0, 0, 0],
+    [0, 3, 0, 0, 0, 0, 0, 0, 0],
+    [0, 2, 6, 3, 0, 0, 5, 0, 0],
+    [5, 0, 3, 7, 0, 0, 0, 0, 8],
+    [4, 7, 0, 0, 0, 1, 0, 0, 0]
+])
+
 def parse_sudoku() -> npt.NDArray[np.int8]:
     """
     Reads a Sudoku grid from standard input as comma-separated rows.
@@ -284,6 +296,29 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
         changed = True
     return changed
 
+def _dfs(grid: npt.NDArray[np.int8]) -> bool:
+    markup = markup_sudoku(grid)
+    empty_cells = [(row, column) for row, column in np.ndindex(9, 9) if grid[row, column] == 0]
+    if len(empty_cells) == 0:
+        return True
+    
+    cells_with_zero = [
+        (row, column) for (row, column) in empty_cells if len(markup[row, column]) == 0
+    ]
+    
+    if cells_with_zero:
+        return False
+    
+    row, column = min(empty_cells, key = lambda pos: len(markup[pos]))
+    for value in markup[row, column]:
+        grid[row, column] = value
+        if _dfs(grid):
+            return True
+        grid[row, column] = 0
+        
+    return False
+
+
 
 def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
@@ -508,13 +543,5 @@ def _apply_naked_subsets_blocks(markup: npt.NDArray[np.object_]) -> bool:
 
 
 if __name__ == "__main__":
-    start = time.time()
-    # sudoku_grid = parse_sudoku()
-    print(f"sudoku_check: {is_valid_sudoku(EXAMPLE_GRID)}")
-    print_sudoku(EXAMPLE_GRID_SHORTZ)
-    print(f'markup: {markup_sudoku(EXAMPLE_GRID_SHORTZ)}')
-    success = solve_sudoku(EXAMPLE_GRID_SHORTZ)
-    print(f'Solved: {success}')
-    print_sudoku(EXAMPLE_GRID_SHORTZ)
-    end = time.time()
-    print(f"Execution time: {end - start:.4f} seconds")
+    print(_dfs(EXAMPLE_GRID_HOLES))
+    print_sudoku(EXAMPLE_GRID_HOLES)
