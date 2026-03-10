@@ -10,11 +10,13 @@ def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> i
     return test_model(data=data, model_type=model_type)
 
   model = load_model(model_type)
-  model.eval()
 
   input_data = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)
   if input_data.max().item() > 1.0:
     input_data = input_data / 255.0
+
+  device = next(model.parameters()).device
+  input_data = input_data.to(device)
   
   with torch.no_grad():
     THRESHOLD = 1.1
@@ -47,5 +49,6 @@ def load_model(model_type: str) -> torch.nn.Module:
   
   model.load_state_dict(state_dict)
   model.to(device)
+  model.eval()
 
   return model 

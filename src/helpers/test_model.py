@@ -23,6 +23,7 @@ def test_model(data: numpy.ndarray, model_type: str) -> int:
   input_data = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)
   if input_data.max().item() > 1.0:
     input_data = input_data / 255.0
+    input_data = input_data.to(device)
   
   with torch.no_grad():
     THRESHOLD = 1.1

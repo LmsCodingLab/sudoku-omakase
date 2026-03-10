@@ -3,7 +3,6 @@ import numpy.typing as npt
 import time
 from collections import Counter
 from itertools import combinations
-from helpers.printer import print_sudoku
 
 
 GRID_SIZE = 9
@@ -65,7 +64,7 @@ def parse_sudoku() -> npt.NDArray[np.int8]:
     Returns:
     - np.ndarray, the populated Sudoku grid.
     """
-    grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=int)
+    grid = np.zeros((GRID_SIZE, GRID_SIZE), dtype=np.int8)
     for row_idx in range(GRID_SIZE):
         raw_row = input(f"please enter row {row_idx + 1}: ")
         grid[row_idx] = list(map(int, raw_row.split(',')))
@@ -182,7 +181,7 @@ def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> se
     """
     
     #check row and column
-    used = set(grid[row]) | {grid[i, column] for i in range(9)}
+    used = set(grid[row]) | {grid[i, column] for i in range(GRID_SIZE)}
     
     #check block
     block_row_start = (row // BLOCK_SIZE) * BLOCK_SIZE
@@ -562,4 +561,4 @@ def _apply_naked_subsets_blocks(markup: npt.NDArray[np.object_]) -> bool:
 
 if __name__ == "__main__":
     print(solve_sudoku(EXAMPLE_GRID_X_WING))
-    print_sudoku(EXAMPLE_GRID_X_WING)
+    print(EXAMPLE_GRID_X_WING)
