@@ -15,24 +15,11 @@ class Sudoku:
         self.original_grid: npt.NDArray[np.int8] = np.zeros((self._GRID_SIZE, self._GRID_SIZE), dtype=np.int8)
 
     def __str__(self) -> str:
-        def printer(grid: npt.NDArray[np.int8]) -> str:
-            to_output = ""
-            for row_idx in range(self._GRID_SIZE):
-                if row_idx % self._BLOCK_SIZE == 0 and row_idx != 0:
-                    to_output += "— " * (self._GRID_SIZE + self._BLOCK_SIZE - 1) + '\n' # separator between blocks
-                row = ""
-                for col_idx in range(self._GRID_SIZE):
-                    if col_idx % self._BLOCK_SIZE == 0 and col_idx != 0:
-                        row += "| " # separator between blocks
-                    row += f"{grid[row_idx, col_idx]} "
-                to_output += row + '\n'
-            return to_output
-        
         output = 'Sudoku From: ' + str(self.source) + '\n'
         output += 'Original Grid:\n'
-        output += printer(self.original_grid)
+        output += self._format_grid(self.original_grid)
         output += 'Current Grid:\n'
-        output += printer(self.grid)
+        output += self._format_grid(self.grid)
         output += 'Solved: ' + str(self.solved)
         return output
 
@@ -42,7 +29,7 @@ class Sudoku:
     def is_solved(self) -> bool:
         return self.solved
     
-    def extract_grid(self, source: str) -> npt.NDArray[np.int8]:
+    def from_photo(self, source: str) -> npt.NDArray[np.int8]:
         p = Path(source).expanduser()
         if not p.is_file():
             raise FileNotFoundError(f"File not found: {source}")
@@ -58,7 +45,7 @@ class Sudoku:
 
         return self.grid.copy()
     
-    def set_grid(self, grid: npt.NDArray[np.int8]) -> None:
+    def from_grid(self, grid: npt.NDArray[np.int8]) -> None:
         if grid.shape != (self._GRID_SIZE, self._GRID_SIZE):
             raise ValueError(f"Grid must be of shape ({self._GRID_SIZE}, {self._GRID_SIZE})")
         if not np.all((grid >= 0) & (grid <= self._GRID_SIZE)):
@@ -73,11 +60,18 @@ class Sudoku:
         self.solved = solve_sudoku(self.grid)
         return self.solved
     
-
-# Example usage
-if __name__ == "__main__":
-    sudoku = Sudoku()
-    sudoku.extract_grid("src/test/IMG_0120.jpg")
-    sudoku.solve()
-    print(sudoku)
+    @staticmethod
+    def _format_grid( grid: npt.NDArray[np.int8]) -> str:
+        to_output = ""
+        for row_idx in range(Sudoku._GRID_SIZE):
+            if row_idx % Sudoku._BLOCK_SIZE == 0 and row_idx != 0:
+                to_output += "— " * (Sudoku._GRID_SIZE + Sudoku._BLOCK_SIZE - 1) + '\n' # separator between blocks
+            row = ""
+            for col_idx in range(Sudoku._GRID_SIZE):
+                if col_idx % Sudoku._BLOCK_SIZE == 0 and col_idx != 0:
+                    row += "| " # separator between blocks
+                row += f"{grid[row_idx, col_idx]} "
+            to_output += row + '\n'
+        return to_output
+    
 
