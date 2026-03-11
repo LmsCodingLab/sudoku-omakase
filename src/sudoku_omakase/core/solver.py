@@ -74,6 +74,7 @@ def solve_sudoku(sudoku: Sudoku) -> bool:
     
     return sudoku.solved
 
+
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
     """
     Applies deduction strategies repeatedly until no further progress occurs.
@@ -150,6 +151,7 @@ def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> se
             
     return VALID_VALUES - used
 
+
 def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
     Places digits whenever a cell has exactly one candidate.
@@ -168,7 +170,6 @@ def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.objec
             change = True
     return change
     
-# MOVED TO CORE/SOLVER.PY
 def apply_hidden_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
     Searches rows, columns, and blocks for digits with a single viable location.
@@ -188,7 +189,6 @@ def apply_hidden_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.obje
         return True
     return False
 
-# MOVED TO CORE/SOLVER.PY
 def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
     """
     Removes digits covered by naked pairs, triples, or quads in each unit.
@@ -208,7 +208,6 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
         changed = True
     return changed
 
-# MOVED TO CORE/SOLVER.PY
 def _dfs(grid: npt.NDArray[np.int8]) -> bool:
     """
     Solves the Sudoku puzzle using backtracking search.
@@ -240,7 +239,6 @@ def _dfs(grid: npt.NDArray[np.int8]) -> bool:
         
     return False
 
-# MOVED TO CORE/SOLVER.PY
 def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
     Finds digits that appear in only one candidate cell within a row.
@@ -271,7 +269,6 @@ def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np
             return True
     return False
 
-# MOVED TO CORE/SOLVER.PY
 def _apply_hidden_single_columns(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
     Finds digits confined to a single candidate cell within a column.
@@ -302,7 +299,6 @@ def _apply_hidden_single_columns(grid: npt.NDArray[np.int8], markup: npt.NDArray
             return True
     return False
 
-# MOVED TO CORE/SOLVER.PY
 def _apply_hidden_single_blocks(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
     Resolves digits that fit only one location inside a 3x3 block.
@@ -335,7 +331,6 @@ def _apply_hidden_single_blocks(grid: npt.NDArray[np.int8], markup: npt.NDArray[
                 return True
     return False
 
-# MOVED TO CORE/SOLVER.PY
 def _apply_naked_subsets_rows(markup: npt.NDArray[np.object_]) -> bool:
     """
     Identifies naked subsets along each row and removes their digits from peers.
@@ -376,7 +371,6 @@ def _apply_naked_subsets_rows(markup: npt.NDArray[np.object_]) -> bool:
                             changed = True
     return changed
 
-# MOVED TO CORE/SOLVER.PY
 def _apply_naked_subsets_columns(markup: npt.NDArray[np.object_]) -> bool:
     """
     Identifies naked subsets along each column and removes their digits from peers.
@@ -417,7 +411,6 @@ def _apply_naked_subsets_columns(markup: npt.NDArray[np.object_]) -> bool:
                             changed = True
     return changed
 
-# MOVED TO CORE/SOLVER.PY
 def _apply_naked_subsets_blocks(markup: npt.NDArray[np.object_]) -> bool:
     """
     Detects naked subsets within each block and removes their digits from peers.
