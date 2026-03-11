@@ -1,14 +1,10 @@
 from pathlib import Path
 import numpy as np
 import numpy.typing as npt
-from enum import Enum
+
+from sudoku_omakase.neural_network.models import ModelType
 
 Image = npt.NDArray[np.uint8]
-
-class ModelType(Enum):
-    BAD = "basic"
-    NORMAL = "resnet"
-    BIG = "resnext"
 
 class SudokuImage:
     """

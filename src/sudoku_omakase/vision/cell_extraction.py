@@ -2,8 +2,9 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 
-from sudoku_omakase.helpers.predictor import guess_num # TODO move to utils later
-from sudoku_omakase.vision.sudoku_image import ModelType, SudokuImage, Image
+from sudoku_omakase.vision.sudoku_image import SudokuImage, Image
+from sudoku_omakase.neural_network.models import ModelType
+from sudoku_omakase.neural_network.predictor import guess_num
 
 def extract_fields(sudoku_image: SudokuImage) -> list[Image]:
     """
@@ -67,7 +68,7 @@ def extract_numbers(sudoku: list[Image], model_type: ModelType) -> npt.NDArray[n
     numbers = []
     batch = []
     for field in sudoku:
-        num = guess_num(data=field, model_type=str(model_type)) # TODO change to model_type=model_type after fixing guess_num function to accept ModelType enum instead of string
+        num = guess_num(data=field, model_type=model_type)
         batch.append(num)
         if len(batch) == 9:
             numbers.append(batch)

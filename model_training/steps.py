@@ -1,5 +1,4 @@
 import torch
-from src.sudoku_omakase.helpers.dev_info import dev_show_message
 
 def accuracy_fn(y_true: torch.Tensor, y_pred: torch.Tensor) -> float:
     """Calculates accuracy between truth labels and predictions.
@@ -21,8 +20,7 @@ def training_step(
                loss_fn: torch.nn.Module,
                optimizer: torch.optim.Optimizer,
                accuracy_fn,
-               device: torch.device = torch.device("cpu"), 
-               dev_mode: bool = False) -> None:
+               device: torch.device = torch.device("cpu")) -> tuple[float, float]:
     """
     Performs a training step for a given model, data loader, loss function, optimizer, and accuracy function.
     Parameters:
@@ -34,7 +32,7 @@ def training_step(
         device (torch.device, optional): The device to perform training on. Defaults to torch.device("cpu").
     
     Returns:
-        None
+        tuple[float, float]: A tuple containing the training loss and training accuracy.
     """
     train_loss, train_acc = 0, 0
     model.train() # put model in train mode
@@ -63,14 +61,14 @@ def training_step(
     # Calculate loss and accuracy per epoch and print out what's happening
     train_loss /= len(data_loader)
     train_acc /= len(data_loader)
-    dev_show_message(dev_mode, f"Train loss: {train_loss:.5f} | Train accuracy: {train_acc:.2f}%")
+
+    return train_loss, train_acc
 
 def testing_step(data_loader: torch.utils.data.DataLoader,
               model: torch.nn.Module,
               loss_fn: torch.nn.Module,
               accuracy_fn,
-              device: torch.device = torch.device("cpu"),
-              dev_mode: bool = False) -> None:
+              device: torch.device = torch.device("cpu")) -> tuple[float, float]:
     """
     Performs a testing step for a given model, data loader, loss function, and accuracy function.
 
@@ -82,7 +80,7 @@ def testing_step(data_loader: torch.utils.data.DataLoader,
         device (torch.device, optional): The device to perform testing on. Defaults to torch.device("cpu").
     
     Returns:
-        None
+        tuple[float, float]: A tuple containing the test loss and test accuracy.
     """
     test_loss, test_acc = 0, 0
     model.eval() # put model in eval mode
@@ -102,4 +100,5 @@ def testing_step(data_loader: torch.utils.data.DataLoader,
         # Adjust metrics and print out
         test_loss /= len(data_loader)
         test_acc /= len(data_loader)
-        dev_show_message(dev_mode, f"Test loss: {test_loss:.5f} | Test accuracy: {test_acc:.2f}%\n")
+    
+    return test_loss, test_acc
