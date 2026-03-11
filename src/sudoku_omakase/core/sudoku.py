@@ -1,30 +1,30 @@
 import numpy.typing as npt
 import numpy as np
+from typing import List, Tuple, Final
 
 class Sudoku:
 	"""
 	A class representing the Sudoku board
 	"""
-	_GRID_SIZE = 9
-	_BLOCK_SIZE = 3
-	_VALID_VALUES = set(range(1, _GRID_SIZE + 1))
-	_VALID_POOL = np.array(sorted(_VALID_VALUES))
+	GRID_SIZE: Final[int] = 9
+	BLOCK_SIZE: Final[int] = 3
+	VALID_VALUES: Final[set[int]] = set(range(1, GRID_SIZE + 1))
 
 	def __init__(self, board: npt.NDArray[np.int8]):
-		if board.shape != (self._GRID_SIZE, self._GRID_SIZE):
-			raise ValueError(f"Board must be a {self._GRID_SIZE}x{self._GRID_SIZE} grid, got {board.shape}")
+		if board.shape != (self.GRID_SIZE, self.GRID_SIZE):
+			raise ValueError(f"Board must be a {self.GRID_SIZE}x{self.GRID_SIZE} grid, got {board.shape}")
 		self.board = board
-		self.valid = self.is_valid_sudoku()
+		self.solved = self.is_solved_sudoku()
 	
 	def __str__(self) -> str:
 		output = 'Original Grid:\n'
 		output += self._print_helper()
-		output += 'Valid: ' + str(self.valid)
+		output += 'Solved: ' + str(self.solved)
 		return output
 
-	def is_valid_sudoku(self) -> bool:
+	def is_solved_sudoku(self) -> bool:
 		"""
-		Checks if a given Sudoku grid is valid by ensuring that it contains only valid numbers and that each row, column, and 3x3 block contains unique values. 
+		Checks if a given Sudoku grid is solved by ensuring that it contains only valid numbers and that each row, column, and 3x3 block contains unique values. 
 
 		Parameters:
 		- self: Sudoku, the instance of the Sudoku class containing the board to check.
@@ -47,7 +47,7 @@ class Sudoku:
 		Returns:
 		- bool, True if all values are between 1 and 9, False otherwise.
 		"""
-		return bool(np.all(np.isin(self.board, self._VALID_POOL)))
+		return bool(np.all(np.isin(self.board, list(self.VALID_VALUES))))
 	
 	def _rows_are_unique(self) -> bool:
 		"""
@@ -59,7 +59,7 @@ class Sudoku:
 		Returns:
 		- bool, True if all rows contain unique values, False otherwise.
 		"""
-		return all(len(np.unique(self.board[row_idx, :])) == self._GRID_SIZE for row_idx in range(self._GRID_SIZE))
+		return all(len(np.unique(self.board[row_idx, :])) == self.GRID_SIZE for row_idx in range(self.GRID_SIZE))
 
 	def _columns_are_unique(self) -> bool:
 		"""
@@ -71,7 +71,7 @@ class Sudoku:
 		Returns:
 		- bool, True if every column has unique values, False otherwise.
 		"""
-		return all(len(np.unique(self.board[:, col_idx])) == self._GRID_SIZE for col_idx in range(self._GRID_SIZE))
+		return all(len(np.unique(self.board[:, col_idx])) == self.GRID_SIZE for col_idx in range(self.GRID_SIZE))
 
 	def _blocks_are_unique(self) -> bool:
 		"""
@@ -83,11 +83,11 @@ class Sudoku:
 		Returns:
 		- bool, True if every block has unique values, False otherwise.
 		"""
-		for start_row in range(0, self._GRID_SIZE, self._BLOCK_SIZE):
-			for start_col in range(0, self._GRID_SIZE, self._BLOCK_SIZE):
-				block = self.board[start_row:start_row + self._BLOCK_SIZE, 
-							start_col:start_col + self._BLOCK_SIZE]
-				if len(np.unique(block)) != self._GRID_SIZE:
+		for start_row in range(0, self.GRID_SIZE, self.BLOCK_SIZE):
+			for start_col in range(0, self.GRID_SIZE, self.BLOCK_SIZE):
+				block = self.board[start_row:start_row + self.BLOCK_SIZE, 
+							start_col:start_col + self.BLOCK_SIZE]
+				if len(np.unique(block)) != self.GRID_SIZE:
 					return False
 		return True
 	
@@ -102,12 +102,12 @@ class Sudoku:
 		- str, a formatted string representation of the Sudoku grid.
 		"""
 		to_output = ""
-		for row_idx in range(self._GRID_SIZE):
-			if row_idx % self._BLOCK_SIZE == 0 and row_idx != 0:
-				to_output += "— " * (self._GRID_SIZE + self._BLOCK_SIZE - 1) + '\n' # separator between blocks
+		for row_idx in range(self.GRID_SIZE):
+			if row_idx % self.BLOCK_SIZE == 0 and row_idx != 0:
+				to_output += "— " * (self.GRID_SIZE + self.BLOCK_SIZE - 1) + '\n' # separator between blocks
 			row = ""
-			for col_idx in range(Sudoku._GRID_SIZE):
-				if col_idx % self._BLOCK_SIZE == 0 and col_idx != 0:
+			for col_idx in range(Sudoku.GRID_SIZE):
+				if col_idx % self.BLOCK_SIZE == 0 and col_idx != 0:
 					row += "| " # separator between blocks
 				row += f"{self.board[row_idx, col_idx]} "
 			to_output += row + '\n'

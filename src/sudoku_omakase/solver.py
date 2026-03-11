@@ -87,18 +87,18 @@ def solve_sudoku(grid: npt.NDArray[np.int8]) -> bool:
         if not _dfs(grid):
             return False            
     
-    return is_valid_sudoku(grid)
+    return is_solved_sudoku(grid)
 
 # MOVED TO CORE/SUDOKU.PY
-def is_valid_sudoku(grid: npt.NDArray[np.int8]) -> bool:
+def is_solved_sudoku(grid: npt.NDArray[np.int8]) -> bool:
     """
-    Checks if a given Sudoku grid is valid by ensuring that it contains only valid numbers and that each row, column, and 3x3 block contains unique values. 
+    Checks if a given Sudoku grid is solved by ensuring that it contains only valid numbers and that each row, column, and 3x3 block contains unique values. 
 
     Parameters:
     - grid: np.ndarray, the Sudoku grid to be checked.
 
     Returns:
-    - bool, True if the grid is a valid Sudoku grid, False otherwise.
+    - bool, True if the grid is a solved Sudoku grid, False otherwise.
     """
     
     if not contains_only_valid_numbers(grid):

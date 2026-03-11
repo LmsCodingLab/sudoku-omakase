@@ -4,9 +4,9 @@ from collections import Counter
 from itertools import combinations
 from sudoku_omakase.core.sudoku import Sudoku
 
-GRID_SIZE = Sudoku._GRID_SIZE
-BLOCK_SIZE = Sudoku._BLOCK_SIZE
-VALID_VALUES = Sudoku._VALID_VALUES
+GRID_SIZE = Sudoku.GRID_SIZE
+BLOCK_SIZE = Sudoku.BLOCK_SIZE
+VALID_VALUES = Sudoku.VALID_VALUES
 
 # TODO Move these to tests/assets.py
 EXAMPLE_GRID = np.array([
@@ -71,7 +71,7 @@ def solve_sudoku(sudoku: Sudoku) -> bool:
         if not _dfs(sudoku.board):
             return False            
     
-    return sudoku.valid
+    return sudoku.solved
 
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
     """
