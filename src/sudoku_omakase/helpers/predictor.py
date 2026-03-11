@@ -1,14 +1,10 @@
 from functools import cache
 import numpy
 import torch
-from src.training.models import ResNet18_32, BasicCNNModel, ResNeXt_101
-from src.helpers.test_model import test_model
+from src.sudoku_omakase.models import ResNet18_32, BasicCNNModel, ResNeXt_101
 
-
+# TODO dev_mode
 def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> int:
-  if dev_mode:
-    return test_model(data=data, model_type=model_type)
-
   model = load_model(model_type)
 
   input_data = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)

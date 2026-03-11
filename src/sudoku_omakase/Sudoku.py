@@ -1,8 +1,8 @@
 from pathlib import Path
 import numpy as np
 import numpy.typing as npt 
-from src.photo_processing import extract_fields, extract_numbers, extract_sudoku, resize_fields
-from src.solver import solve_sudoku
+from src.sudoku_omakase.photo_processing import extract_fields, extract_numbers, extract_sudoku, resize_fields
+from src.sudoku_omakase.solver import solve_sudoku
 
 class Sudoku:
     """

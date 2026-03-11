@@ -3,9 +3,8 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 from cv2.typing import MatLike
-from src.helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
-from src.helpers.test_model import test_model
-from src.predictor import guess_num
+from src.sudoku_omakase.helpers.dev_info import dev_show_image, dev_show_message, dev_draw_image
+from src.sudoku_omakase.helpers.predictor import guess_num
 
 SIZE = 450
 
@@ -138,13 +137,12 @@ def resize_fields(fields: list[MatLike], dev_mode: bool = False) -> list[MatLike
     """
     resized_fields = []
     dev_show_message(dev_mode, "Now resizing")
+    # TODO dev_mode
     for field in fields:
         cropped_field = field[5:-5, 5:-5] # Crop 5 pixels from each side to remove grid lines
         resized_field = cv2.resize(cropped_field, (32, 32), interpolation=cv2.INTER_AREA)
         resized_fields.append(resized_field)
         dev_show_image(dev_mode, "Downscaled", resized_field)
-        if dev_mode:
-            test_model(resized_field, "resnext") # ! Hardcoded model_type for testing purposes
 
     return resized_fields
 
