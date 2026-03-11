@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from timeit import default_timer as timer
 from pathlib import Path
-from src.sudoku_omakase.models import BasicCNNModel, ResNeXt_101, ResNet18_32
+from sudoku_omakase.model.models import BasicCNNModel, ResNeXt_101, ResNet18_32
 from model_training.warmup import warmup
 from model_training.steps import accuracy_fn, training_step, testing_step
 from src.sudoku_omakase.helpers.dev_info import dev_show_message

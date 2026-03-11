@@ -1,6 +1,12 @@
 import torch
 from torch import nn
 from torchvision import models
+from enum import Enum
+
+class ModelType(Enum):
+  BAD = "basic",
+  NORMAL = "resnet",
+  BIG = "resnext"
 
 class BasicCNNModel(nn.Module):
   """

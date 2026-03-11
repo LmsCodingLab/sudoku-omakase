@@ -1,0 +1,1 @@
+# Placeholder file for weights. This is where the model weights will be stored. The actual loading of the weights is done in predictor.py, but this file serves as a central location for all weight files and related functions.
