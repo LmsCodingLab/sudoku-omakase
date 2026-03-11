@@ -1,6 +1,6 @@
 import numpy.typing as npt
 import numpy as np
-from typing import List, Tuple, Final
+from typing import Final
 
 class Sudoku:
 	"""
@@ -30,7 +30,7 @@ class Sudoku:
 		- self: Sudoku, the instance of the Sudoku class containing the board to check.
 
 		Returns:
-		- bool, True if the grid is a valid Sudoku grid, False otherwise.
+		- bool, True if the grid is a solved Sudoku grid, False otherwise.
 		"""
 		
 		if not self._contains_only_valid_numbers():
@@ -106,7 +106,7 @@ class Sudoku:
 			if row_idx % self.BLOCK_SIZE == 0 and row_idx != 0:
 				to_output += "— " * (self.GRID_SIZE + self.BLOCK_SIZE - 1) + '\n' # separator between blocks
 			row = ""
-			for col_idx in range(Sudoku.GRID_SIZE):
+			for col_idx in range(self.GRID_SIZE):
 				if col_idx % self.BLOCK_SIZE == 0 and col_idx != 0:
 					row += "| " # separator between blocks
 				row += f"{self.board[row_idx, col_idx]} "
