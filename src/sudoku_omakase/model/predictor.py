@@ -42,7 +42,7 @@ def load_model(model_type: ModelType) -> torch.nn.Module:
     model = ResNeXt_101(1, 10)
     state_dict = torch.load("weights/resnext_model.pth", weights_only=True, map_location=device)
   else:
-    raise ValueError(f"Unknown model type: {model_type}. Expected 'basic', 'resnet', or 'resnext'.")
+    raise ValueError(f"Unknown model type: {model_type}. Expected ModelType.BAD, ModelType.NORMAL, or ModelType.BIG.")
   
   model.load_state_dict(state_dict)
   model.to(device)

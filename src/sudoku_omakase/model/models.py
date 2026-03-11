@@ -4,8 +4,8 @@ from torchvision import models
 from enum import Enum
 
 class ModelType(Enum):
-  BAD = "basic",
-  NORMAL = "resnet",
+  BAD = "basic"
+  NORMAL = "resnet"
   BIG = "resnext"
 
 class BasicCNNModel(nn.Module):
@@ -22,6 +22,8 @@ class BasicCNNModel(nn.Module):
   """
   def __init__(self, input_shape: int, output_shape: int, image_size: int = 32):
     super().__init__()
+    if image_size % 4 != 0:
+      raise ValueError("Image size must be divisible by 4 to ensure proper downsampling through the convolutional layers.")
     hidden_units = 10
     self.conv_block1 = nn.Sequential(
       nn.Conv2d(in_channels=input_shape, 
