@@ -4,7 +4,6 @@ from collections import Counter
 from itertools import combinations
 from sudoku_omakase.core.sudoku import Sudoku
 
-
 GRID_SIZE = Sudoku.GRID_SIZE
 BLOCK_SIZE = Sudoku.BLOCK_SIZE
 VALID_VALUES = Sudoku.VALID_VALUES
@@ -73,7 +72,6 @@ def solve_sudoku(sudoku: Sudoku) -> bool:
             return False            
     
     return sudoku.solved
-
 
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
     """
@@ -151,7 +149,6 @@ def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> se
             
     return VALID_VALUES - used
 
-
 def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
     Places digits whenever a cell has exactly one candidate.
@@ -170,6 +167,7 @@ def apply_naked_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.objec
             change = True
     return change
     
+
 def apply_hidden_singles(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:
     """
     Searches rows, columns, and blocks for digits with a single viable location.
