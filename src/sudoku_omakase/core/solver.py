@@ -2,7 +2,7 @@ import numpy as np
 import numpy.typing as npt
 from collections import Counter
 from itertools import combinations
-from src.sudoku_omakase.core.sudoku import Sudoku
+from sudoku_omakase.core.sudoku import Sudoku
 
 GRID_SIZE = Sudoku.GRID_SIZE
 BLOCK_SIZE = Sudoku.BLOCK_SIZE
