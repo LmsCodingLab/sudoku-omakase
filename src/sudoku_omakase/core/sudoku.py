@@ -19,7 +19,7 @@ class Sudoku:
 		self.solved = self.is_solved_sudoku()
 	
 	def __str__(self) -> str:
-		output = 'Original Grid:\n'
+		output = '\nBoard:\n'
 		output += self._print_helper()
 		output += 'Solved: ' + str(self.solved)
 		return output
@@ -58,6 +58,18 @@ class Sudoku:
 		
 		self.solved = self.is_solved_sudoku()
 		return self.solved
+	
+	def get_board(self) -> npt.NDArray[np.int8]:
+		"""
+		Returns the current state of the Sudoku board.
+
+		Parameters:
+		- self: Sudoku, the instance of the Sudoku class containing the board to return.
+
+		Returns:
+		- npt.NDArray[np.int8], a 2D numpy array representing the current state of the Sudoku board.
+		"""
+		return self.board.copy()
 		
 	def _contains_only_valid_numbers(self) -> bool:
 		"""

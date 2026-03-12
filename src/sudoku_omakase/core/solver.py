@@ -1,12 +1,12 @@
+from typing_extensions import Final
 import numpy as np
 import numpy.typing as npt
 from collections import Counter
 from itertools import combinations
-from sudoku_omakase.core.sudoku import Sudoku
 
-GRID_SIZE = Sudoku.GRID_SIZE
-BLOCK_SIZE = Sudoku.BLOCK_SIZE
-VALID_VALUES = Sudoku.VALID_VALUES
+GRID_SIZE: Final[int] = 9
+BLOCK_SIZE: Final[int] = 3
+VALID_VALUES: Final[set[int]] = set(range(1, GRID_SIZE + 1))
 
 # TODO Move these to tests/assets.py
 EXAMPLE_GRID = np.array([
