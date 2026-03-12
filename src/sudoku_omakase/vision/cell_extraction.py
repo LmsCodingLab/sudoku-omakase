@@ -3,10 +3,12 @@ import numpy as np
 import numpy.typing as npt
 
 from sudoku_omakase.model.predictor import guess_num 
-from sudoku_omakase.vision.sudoku_image import SudokuImage, Image
 from sudoku_omakase.model.models import ModelType
 
-def extract_fields(sudoku_image: SudokuImage) -> list[Image]:
+Image = npt.NDArray[np.uint8]
+SIZE = 450
+
+def extract_fields(sudoku_image: Image) -> list[Image]:
     """
     Extracts the 81 individual fields from the warped sudoku grid image.
 
@@ -16,15 +18,17 @@ def extract_fields(sudoku_image: SudokuImage) -> list[Image]:
     Returns:
     - list of np.ndarray, the extracted field images.
     """
-    if sudoku_image.warped is None:
+    if sudoku_image is None:
         raise RuntimeError("Image must be preprocessed before extracting fields. Call preprocess() method first.")
+    if sudoku_image.shape[0] != SIZE or sudoku_image.shape[1] != SIZE:
+        raise ValueError(f"Invalid image size: {sudoku_image.shape}. Expected ({SIZE}, {SIZE}). Ensure the image is warped to the correct size before extracting fields.")
 
     fields = []
-    field_size = sudoku_image.size // 9
+    field_size = SIZE // 9
     for row in range(9):
         for col in range(9):
             x_start, y_start = col * field_size, row * field_size
-            field = sudoku_image.warped[y_start:y_start + field_size, x_start:x_start + field_size]
+            field = sudoku_image[y_start:y_start + field_size, x_start:x_start + field_size]
             fields.append(field)
 
     return fields
@@ -42,7 +46,7 @@ def resize_fields(fields: list[Image]) -> list[Image]:
     if not fields:
         return []
     
-    CROP_MARGIN = max(1, fields[0].shape[0] // 8) # Crop 1/8 of the field size or 1 from each side to remove grid lines 
+    CROP_MARGIN = 5
     resized_fields = []
     for field in fields:
         cropped_field = field[CROP_MARGIN:-CROP_MARGIN, CROP_MARGIN:-CROP_MARGIN] # Crop the margin from each side to remove grid lines

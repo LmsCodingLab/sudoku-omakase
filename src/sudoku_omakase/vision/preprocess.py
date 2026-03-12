@@ -3,24 +3,23 @@ import numpy as np
 import numpy.typing as npt
 from typing import cast
 
-from sudoku_omakase.vision.sudoku_image import Image, SudokuImage
+Image = npt.NDArray[np.uint8]
 
-
-def prepare_image(sudoku_image: SudokuImage) -> Image:
+def prepare_image(source: str) -> Image:
 	"""
 		Reads the input image, converts it to grayscale, applies a Gaussian blur, and then applies adaptive thresholding to prepare it for contour detection.
 
 		Parameters:
-		- sudoku_image: SudokuImage, the sudoku image to prepare.
+		- source: str, the path to the input image.
 
 		Returns:
 		- np.ndarray, the processed image.
 	"""
 
 	# Load the image convert to grayscale and blur it
-	image = cv2.imread(str(sudoku_image.source), flags=0)
+	image = cv2.imread(source, flags=0)
 	if image is None:
-		raise FileNotFoundError(f"Image not found at path: {sudoku_image.source}")
+		raise FileNotFoundError(f"Image not found at path: {source}")
 
 	image = cv2.GaussianBlur(src=image, ksize=(7, 7), sigmaX=0)
 

@@ -1,4 +1,4 @@
-from .pipeline import SudokuImageSolver, SudokuGridSolver
 from .core.sudoku import Sudoku
+from .core.sudoku_image import SudokuImage
 
-__all__ = ["SudokuImageSolver", "SudokuGridSolver", "Sudoku"]
+__all__ = ["Sudoku", "SudokuImage"]
