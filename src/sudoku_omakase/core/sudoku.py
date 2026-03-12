@@ -2,7 +2,7 @@ import numpy.typing as npt
 import numpy as np
 from typing import Final
 
-from sudoku_omakase.core.solver import _dfs, run_passes
+from sudoku_omakase.core.solver import dfs, run_passes
 
 class Sudoku:
 	"""
@@ -53,9 +53,10 @@ class Sudoku:
 		has_zero = np.any(self.board == 0)
 
 		if has_zero:
-			if not _dfs(self.board):
+			if not dfs(self.board):
 				return False            
 		
+		self.solved = self.is_solved_sudoku()
 		return self.solved
 		
 	def _contains_only_valid_numbers(self) -> bool:

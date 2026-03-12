@@ -86,6 +86,37 @@ def run_passes(grid: npt.NDArray[np.int8]) -> None:
         if not progress:
             break
         
+def dfs(grid: npt.NDArray[np.int8]) -> bool:
+    """
+    Solves the Sudoku puzzle using backtracking search.
+    
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to solve in place.
+    
+    Returns:
+        - bool, True if a solution was found, False otherwise.
+    """
+    markup = markup_sudoku(grid)
+    empty_cells = [(row, column) for row, column in np.ndindex(GRID_SIZE, GRID_SIZE) if grid[row, column] == 0]
+    if len(empty_cells) == 0:
+        return True
+    
+    cells_with_zero = [
+        (row, column) for (row, column) in empty_cells if len(markup[row, column]) == 0
+    ]
+    
+    if cells_with_zero:
+        return False
+    
+    row, column = min(empty_cells, key = lambda pos: len(markup[pos]))
+    for value in markup[row, column]:
+        grid[row, column] = value
+        if dfs(grid):
+            return True
+        grid[row, column] = 0
+        
+    return False
+
 def markup_sudoku(grid: npt.NDArray[np.int8]) -> npt.NDArray[np.object_]:
     """
     Builds a grid of candidate sets for every unsolved cell.
@@ -189,36 +220,6 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
     return changed
 
 
-def _dfs(grid: npt.NDArray[np.int8]) -> bool:
-    """
-    Solves the Sudoku puzzle using backtracking search.
-    
-    Parameters:
-    - grid: np.ndarray, the Sudoku grid to solve in place.
-    
-    Returns:
-        - bool, True if a solution was found, False otherwise.
-    """
-    markup = markup_sudoku(grid)
-    empty_cells = [(row, column) for row, column in np.ndindex(GRID_SIZE, GRID_SIZE) if grid[row, column] == 0]
-    if len(empty_cells) == 0:
-        return True
-    
-    cells_with_zero = [
-        (row, column) for (row, column) in empty_cells if len(markup[row, column]) == 0
-    ]
-    
-    if cells_with_zero:
-        return False
-    
-    row, column = min(empty_cells, key = lambda pos: len(markup[pos]))
-    for value in markup[row, column]:
-        grid[row, column] = value
-        if _dfs(grid):
-            return True
-        grid[row, column] = 0
-        
-    return False
 
 
 def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:

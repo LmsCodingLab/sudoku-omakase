@@ -57,9 +57,12 @@ class SudokuImageSolver:
             raise ValueError("Sudoku has not been generated yet. Call get_sudoku_from_image() first.")
         return self.sudoku
     
-    def solve(self):
+    def solve(self) -> None:
         """
         Solves the Sudoku puzzle using a backtracking algorithm.
+
+        Parameters:
+        - self: SudokuImageSolver, the instance of the SudokuImageSolver class containing the Sudoku
         """
         if self.sudoku is None:
             raise ValueError("Sudoku has not been generated yet. Call get_sudoku_from_image() first.")
