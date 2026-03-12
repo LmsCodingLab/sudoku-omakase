@@ -59,17 +59,40 @@ class Sudoku:
 		self.solved = self.is_solved_sudoku()
 		return self.solved
 	
-	def get_board(self) -> npt.NDArray[np.int8]:
+	def mutate_one_field(self, row: int, col: int, value: int) -> None:
 		"""
-		Returns the current state of the Sudoku board.
+		Mutates a single field in the Sudoku grid with a new value.
 
 		Parameters:
-		- self: Sudoku, the instance of the Sudoku class containing the board to return.
-
-		Returns:
-		- npt.NDArray[np.int8], a 2D numpy array representing the current state of the Sudoku board.
+		- row: int - The row index of the field to mutate (0-based).
+		- col: int - The column index of the field to mutate (0-based).
+		- value: int - The new value to set in the specified field.
 		"""
-		return self.board.copy()
+		if not (0 <= row < self.GRID_SIZE) or not (0 <= col < self.GRID_SIZE):
+			raise IndexError(f"Row and column indices must be between 0 and {self.GRID_SIZE - 1}. Got row={row}, col={col}.")
+		if value not in self.VALID_VALUES:
+			raise ValueError(f"Value must be between 1 and {self.GRID_SIZE}. Got value={value}.")
+
+		self.board[row, col] = value
+		self.solved = self.is_solved_sudoku()
+
+	def mutate_fields(self, mutations: list[tuple[int, int, int]]) -> None:
+		"""
+		Mutates multiple fields in the Sudoku grid with new values.
+
+		Parameters:
+		- mutations: list of tuples (row, col, value) - A list of mutations to apply, where each mutation is a tuple containing the row index, column index, and new value for a field.
+		"""
+		if not all(0 <= row < self.GRID_SIZE and 0 <= col < self.GRID_SIZE for row, col, _ in mutations):
+			raise IndexError(f"Row and column indices must be between 0 and {self.GRID_SIZE - 1}. Got mutations={mutations}.")
+		if not all(value in self.VALID_VALUES for _, _, value in mutations):
+			raise ValueError(f"Values must be between 1 and {self.GRID_SIZE}. Got mutations={mutations}.")
+		
+		for row, col, value in mutations:
+			self.board[row, col] = value
+		
+		self.solved = self.is_solved_sudoku()
+    
 		
 	def _contains_only_valid_numbers(self) -> bool:
 		"""
