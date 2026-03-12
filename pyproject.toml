@@ -5,17 +5,25 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sudoku_omakase"
 version = "0.1.0"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 description = "A computer vision and Sudoku solving project"
 authors = [
     {name = "Philipp"},
     {name = "Konstantin"}
 
 ]
-# TODO add dependencies
+
 dependencies = [
-    # "numpy",
-    # "opencv-python",
+    "numpy==2.4.2",
+    "opencv-python==4.13.0.92",
+    "scipy==1.17.0",
+    "pooch==1.9.0",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.urls]
+"Homepage" = "https://github.com/LmsCodingLab/sudoku-omakase"
