@@ -1,12 +1,12 @@
+from typing_extensions import Final
 import numpy as np
 import numpy.typing as npt
 from collections import Counter
 from itertools import combinations
-from sudoku_omakase.core.sudoku import Sudoku
 
-GRID_SIZE = Sudoku.GRID_SIZE
-BLOCK_SIZE = Sudoku.BLOCK_SIZE
-VALID_VALUES = Sudoku.VALID_VALUES
+GRID_SIZE: Final[int] = 9
+BLOCK_SIZE: Final[int] = 3
+VALID_VALUES: Final[set[int]] = set(range(1, GRID_SIZE + 1))
 
 # TODO Move these to tests/assets.py
 EXAMPLE_GRID = np.array([
@@ -54,25 +54,6 @@ EXAMPLE_GRID_X_WING = np.array([
     [4, 7, 0, 0, 0, 1, 0, 0, 0]
 ])
 
-def solve_sudoku(sudoku: Sudoku) -> bool:
-    """
-    Runs Crook-style passes until no deduction rule makes further progress.
-
-    Parameters:
-    - sudoku: Sudoku, the instance of the Sudoku class containing the board to solve.
-
-    Returns:
-    - bool, True if the resulting grid is a valid Sudoku, False otherwise.
-    """
-    run_passes(sudoku.board)
-    has_zero = np.any(sudoku.board == 0)
-
-    if has_zero:
-        if not _dfs(sudoku.board):
-            return False            
-    
-    return sudoku.solved
-
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
     """
     Applies deduction strategies repeatedly until no further progress occurs.
@@ -105,6 +86,37 @@ def run_passes(grid: npt.NDArray[np.int8]) -> None:
         if not progress:
             break
         
+def dfs(grid: npt.NDArray[np.int8]) -> bool:
+    """
+    Solves the Sudoku puzzle using backtracking search.
+    
+    Parameters:
+    - grid: np.ndarray, the Sudoku grid to solve in place.
+    
+    Returns:
+        - bool, True if a solution was found, False otherwise.
+    """
+    markup = markup_sudoku(grid)
+    empty_cells = [(row, column) for row, column in np.ndindex(GRID_SIZE, GRID_SIZE) if grid[row, column] == 0]
+    if len(empty_cells) == 0:
+        return True
+    
+    cells_with_zero = [
+        (row, column) for (row, column) in empty_cells if len(markup[row, column]) == 0
+    ]
+    
+    if cells_with_zero:
+        return False
+    
+    row, column = min(empty_cells, key = lambda pos: len(markup[pos]))
+    for value in markup[row, column]:
+        grid[row, column] = value
+        if dfs(grid):
+            return True
+        grid[row, column] = 0
+        
+    return False
+
 def markup_sudoku(grid: npt.NDArray[np.int8]) -> npt.NDArray[np.object_]:
     """
     Builds a grid of candidate sets for every unsolved cell.
@@ -208,36 +220,6 @@ def apply_naked_subsets(markup: npt.NDArray[np.object_]) -> bool:
     return changed
 
 
-def _dfs(grid: npt.NDArray[np.int8]) -> bool:
-    """
-    Solves the Sudoku puzzle using backtracking search.
-    
-    Parameters:
-    - grid: np.ndarray, the Sudoku grid to solve in place.
-    
-    Returns:
-        - bool, True if a solution was found, False otherwise.
-    """
-    markup = markup_sudoku(grid)
-    empty_cells = [(row, column) for row, column in np.ndindex(GRID_SIZE, GRID_SIZE) if grid[row, column] == 0]
-    if len(empty_cells) == 0:
-        return True
-    
-    cells_with_zero = [
-        (row, column) for (row, column) in empty_cells if len(markup[row, column]) == 0
-    ]
-    
-    if cells_with_zero:
-        return False
-    
-    row, column = min(empty_cells, key = lambda pos: len(markup[pos]))
-    for value in markup[row, column]:
-        grid[row, column] = value
-        if _dfs(grid):
-            return True
-        grid[row, column] = 0
-        
-    return False
 
 
 def _apply_hidden_single_rows(grid: npt.NDArray[np.int8], markup: npt.NDArray[np.object_]) -> bool:

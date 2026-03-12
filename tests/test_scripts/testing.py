@@ -1,3 +1,4 @@
+from sudoku_omakase.pipeline import SudokuGridSolver, SudokuImageSolver
 from sudoku_omakase.vision.sudoku_image import SudokuImage
 from sudoku_omakase.core.sudoku import Sudoku
 from sudoku_omakase.model.models import ModelType
@@ -21,6 +22,21 @@ def test_guess_num():
     print(sudoku)
     
 
+def test_pipelines():
+    source = "tests/test_images/IMG_0120.jpg"
+    solver = SudokuImageSolver(source, model_type="BAD")
+    solver.get_sudoku_from_image()
+    sudoku = solver.get_sudoku()
+    gird = sudoku.board.copy()
+    print(sudoku)
+    solver.solve()
+    print(sudoku)
+
+    grid_solver = SudokuGridSolver(gird)
+    print(grid_solver.sudoku)
+    grid_solver.solve()
+    print(grid_solver.sudoku)
+
 
 if "__main__" == __name__:
-    test_guess_num()
+    test_pipelines()

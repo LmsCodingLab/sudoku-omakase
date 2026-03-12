@@ -2,6 +2,8 @@ import numpy.typing as npt
 import numpy as np
 from typing import Final
 
+from sudoku_omakase.core.solver import dfs, run_passes
+
 class Sudoku:
 	"""
 	A class representing the Sudoku board
@@ -17,7 +19,7 @@ class Sudoku:
 		self.solved = self.is_solved_sudoku()
 	
 	def __str__(self) -> str:
-		output = 'Original Grid:\n'
+		output = '\nBoard:\n'
 		output += self._print_helper()
 		output += 'Solved: ' + str(self.solved)
 		return output
@@ -37,6 +39,38 @@ class Sudoku:
 			return False
 		return self._rows_are_unique() and self._columns_are_unique() and self._blocks_are_unique()
 	
+	def solve(self) -> bool:
+		"""
+		Runs Crook-style passes until no deduction rule makes further progress.
+
+		Parameters:
+		- sudoku: Sudoku, the instance of the Sudoku class containing the board to solve.
+
+		Returns:
+		- bool, True if the resulting grid is a valid Sudoku, False otherwise.
+		"""
+		run_passes(self.board)
+		has_zero = np.any(self.board == 0)
+
+		if has_zero:
+			if not dfs(self.board):
+				return False            
+		
+		self.solved = self.is_solved_sudoku()
+		return self.solved
+	
+	def get_board(self) -> npt.NDArray[np.int8]:
+		"""
+		Returns the current state of the Sudoku board.
+
+		Parameters:
+		- self: Sudoku, the instance of the Sudoku class containing the board to return.
+
+		Returns:
+		- npt.NDArray[np.int8], a 2D numpy array representing the current state of the Sudoku board.
+		"""
+		return self.board.copy()
+		
 	def _contains_only_valid_numbers(self) -> bool:
 		"""
 		Checks whether every entry falls within the allowed digit range.
