@@ -24,7 +24,7 @@ class SudokuImage:
         self.numbers = None
 
     def preprocess(self) -> Image:
-        from src.sudoku_omakase.vision.preprocess import prepare_image, detect_grid, warp_image
+        from sudoku_omakase.vision.preprocess import prepare_image, detect_grid, warp_image
         """
         Preprocesses the input image by preparing it, detecting the grid, and warping it to a top-down view.
 
