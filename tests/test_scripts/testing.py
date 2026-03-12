@@ -1,5 +1,6 @@
-from src.sudoku_omakase.vision.sudoku_image import SudokuImage
-from src.sudoku_omakase.model.models import ModelType
+from sudoku_omakase.vision.sudoku_image import SudokuImage
+from sudoku_omakase.core.sudoku import Sudoku
+from sudoku_omakase.model.models import ModelType
 from pathlib import Path
 
 def test_guess_num():
@@ -15,9 +16,10 @@ def test_guess_num():
     
     # Extract the predicted numbers from the fields
     predicted_numbers = sudoku_image.extract_numbers()
+
+    sudoku = Sudoku(predicted_numbers)
+    print(sudoku)
     
-    # Print the predicted numbers for verification
-    print(predicted_numbers)
 
 
 if "__main__" == __name__:
