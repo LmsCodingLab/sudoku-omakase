@@ -1,10 +1,10 @@
 from functools import cache
 import numpy
 import torch
-from src.sudoku_omakase.models import ResNet18_32, BasicCNNModel, ResNeXt_101
+from sudoku_omakase.model.models import ResNet18_32, BasicCNNModel, ResNeXt_101, ModelType
+from sudoku_omakase.model.weights import load_model_from_origin
 
-# TODO dev_mode
-def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> int:
+def guess_num(data: numpy.ndarray, model_type: ModelType) -> int:
   model = load_model(model_type)
 
   input_data = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)
@@ -17,10 +17,12 @@ def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> i
   with torch.no_grad():
     THRESHOLD = 1.1
     logits = model(input_data)
+
     probabilities = torch.softmax(logits,dim=1)
     dist = torch.distributions.Categorical(probs=probabilities)
     ent = dist.entropy().item()
     _, predicted_class = torch.max(probabilities, dim=1)
+
     if ent > THRESHOLD:
       prediction = 0 # If the model is not confident enough, return 0 (which could represent "unknown" or "uncertain")
     else:
@@ -29,20 +31,19 @@ def guess_num(data: numpy.ndarray, model_type: str, dev_mode: bool = False) -> i
   return prediction
 
 @cache
-def load_model(model_type: str) -> torch.nn.Module:
+def load_model(model_type: ModelType) -> torch.nn.Module:
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-  if model_type == "basic":
+  if model_type == ModelType.BAD:
     model = BasicCNNModel(1, 10)
-    state_dict = torch.load("weights/basic_cnn_model.pth", weights_only=True, map_location=device)
-  elif model_type == "resnet":
+  elif model_type == ModelType.NORMAL:
     model = ResNet18_32(1, 10)
-    state_dict = torch.load("weights/resnet_model.pth", weights_only=True, map_location=device)
-  elif model_type == "resnext":
+  elif model_type == ModelType.BIG:
     model = ResNeXt_101(1, 10)
-    state_dict = torch.load("weights/resnext_model.pth", weights_only=True, map_location=device)
   else:
-    raise ValueError(f"Unknown model type: {model_type}. Expected 'basic', 'resnet', or 'resnext'.")
+    raise ValueError(f"Unknown model type: {model_type}. Expected ModelType.BAD, ModelType.NORMAL, or ModelType.BIG.")
   
+  path_to_weights = load_model_from_origin(model_type)
+  state_dict = torch.load(path_to_weights, map_location=device)
   model.load_state_dict(state_dict)
   model.to(device)
   model.eval()

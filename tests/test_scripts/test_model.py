@@ -1,6 +1,6 @@
 import numpy
 import torch
-from src.sudoku_omakase.models import ResNeXt_101, ResNet18_32, BasicCNNModel
+from sudoku_omakase.model.models import ResNeXt_101, ResNet18_32, BasicCNNModel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
