@@ -35,16 +35,15 @@ def load_model(model_type: ModelType) -> torch.nn.Module:
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   if model_type == ModelType.BAD:
     model = BasicCNNModel(1, 10)
-    state_dict = torch.load(load_model_from_origin(model_type), weights_only=True, map_location=device)
   elif model_type == ModelType.NORMAL:
     model = ResNet18_32(1, 10)
-    state_dict = torch.load(load_model_from_origin(model_type), weights_only=True, map_location=device)
   elif model_type == ModelType.BIG:
     model = ResNeXt_101(1, 10)
-    state_dict = torch.load(load_model_from_origin(model_type), weights_only=True, map_location=device)
   else:
     raise ValueError(f"Unknown model type: {model_type}. Expected ModelType.BAD, ModelType.NORMAL, or ModelType.BIG.")
   
+  path_to_weights = load_model_from_origin(model_type)
+  state_dict = torch.load(path_to_weights, map_location=device)
   model.load_state_dict(state_dict)
   model.to(device)
   model.eval()

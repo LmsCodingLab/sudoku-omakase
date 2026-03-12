@@ -41,7 +41,7 @@ class SudokuImage:
         return self.warped.copy()
     
     def extract_fields(self) -> list[Image]:
-        from src.sudoku_omakase.vision.cell_extraction import extract_fields, resize_fields
+        from sudoku_omakase.vision.cell_extraction import extract_fields, resize_fields
         """
         Extracts the individual field images from the warped sudoku grid.
 
