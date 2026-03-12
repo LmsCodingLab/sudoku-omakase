@@ -1,4 +1,7 @@
 from pathlib import Path
+import numpy as np
+import numpy.typing as npt
+
 from sudoku_omakase.model.models import ModelType
 from sudoku_omakase.vision.sudoku_image import SudokuImage
 from sudoku_omakase.core.sudoku import Sudoku
@@ -15,20 +18,6 @@ class SudokuImageSolver:
         self.model_type = self._convert_to_model_type(model_type)
         self.sudoku=None
 
-    def _convert_to_model_type(self, model_type: str) -> ModelType:
-        """
-        Converts a string representation of the model type to the corresponding ModelType enum.
-
-        Parameters:
-        - model_type: str - The string representation of the model type.
-
-        Returns:
-        - ModelType - The corresponding ModelType enum value.
-        """
-        try:
-            return ModelType[model_type.upper()]
-        except KeyError:
-            raise ValueError(f"Invalid model type: {model_type}. Valid options are: {[model.name for model in ModelType]}")
     
     def get_sudoku_from_image(self):
         # Create a SudokuImage instance with the provided image path and model type
@@ -57,14 +46,55 @@ class SudokuImageSolver:
             raise ValueError("Sudoku has not been generated yet. Call get_sudoku_from_image() first.")
         return self.sudoku
     
-    def solve(self) -> None:
+    def solve(self) -> bool:
         """
         Solves the Sudoku puzzle using a backtracking algorithm.
 
         Parameters:
         - self: SudokuImageSolver, the instance of the SudokuImageSolver class containing the Sudoku
+        
+        Returns:
+        - bool - True if the Sudoku puzzle was solved successfully, False otherwise.
         """
         if self.sudoku is None:
             raise ValueError("Sudoku has not been generated yet. Call get_sudoku_from_image() first.")
         
-        self.sudoku.solve()
+        return self.sudoku.solve()
+
+    def _convert_to_model_type(self, model_type: str) -> ModelType:
+        """
+        Converts a string representation of the model type to the corresponding ModelType enum.
+
+        Parameters:
+        - model_type: str - The string representation of the model type.
+
+        Returns:
+        - ModelType - The corresponding ModelType enum value.
+        """
+        try:
+            return ModelType[model_type.upper()]
+        except KeyError:
+            raise ValueError(f"Invalid model type: {model_type}. Valid options are: {[model.name for model in ModelType]}")
+        
+
+class SudokuGridSolver:
+    def __init__(self, grid: npt.NDArray[np.int8]) -> None:
+        """
+        Initializes the SudokuGridSolver with a 2D list representing the Sudoku grid.
+
+        Parameters:
+        - grid: npt.NDArray[np.int8] - A 2D numpy array representing the Sudoku grid, where 0 represents an empty cell.
+        """
+        self.sudoku = Sudoku(grid)
+        
+    def solve(self) -> bool:
+        """
+        Solves the Sudoku puzzle using a backtracking algorithm.
+
+        Parameters:
+        - self: SudokuGridSolver, the instance of the SudokuGridSolver class containing the Sudoku
+
+        Returns:
+        - bool - True if the Sudoku puzzle was solved successfully, False otherwise.
+        """        
+        return self.sudoku.solve()
