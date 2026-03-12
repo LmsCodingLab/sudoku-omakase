@@ -54,25 +54,6 @@ EXAMPLE_GRID_X_WING = np.array([
     [4, 7, 0, 0, 0, 1, 0, 0, 0]
 ])
 
-def solve_sudoku(sudoku: Sudoku) -> bool:
-    """
-    Runs Crook-style passes until no deduction rule makes further progress.
-
-    Parameters:
-    - sudoku: Sudoku, the instance of the Sudoku class containing the board to solve.
-
-    Returns:
-    - bool, True if the resulting grid is a valid Sudoku, False otherwise.
-    """
-    run_passes(sudoku.board)
-    has_zero = np.any(sudoku.board == 0)
-
-    if has_zero:
-        if not _dfs(sudoku.board):
-            return False            
-    
-    return sudoku.solved
-
 def run_passes(grid: npt.NDArray[np.int8]) -> None:
     """
     Applies deduction strategies repeatedly until no further progress occurs.
