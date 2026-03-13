@@ -90,7 +90,7 @@ Use this class when you have a picture. Point it to any JPEG/PNG path, pick a `m
 
 - Inspect the recognized puzzle via `sudoku.board` or `print(sudoku)`.
 - Export the solved grid as NumPy (`to_numpy()`), Python lists (`to_list()`), or mutate cells with `mutate_one_field()` if something looks off.
-- Enable optional keyword arguments like `device="cuda"`, `debug_dir="out/"`, or `cell_padding=2` to tune performance and logging.
+- Inspect the processed sudoku image via `sudoku.get_extracted_sudoku_image()`
 
 ### `Sudoku`
 
