@@ -76,7 +76,7 @@ print(sudoku)
 4. **Read the result:** Use `print(sudoku)` or `sudoku.board` to access the solved 9×9 array.
 
 
-## Models
+## 4. Models
 Currently, there are 3 pretrained models for sudoku recognition. The model will be **automatically installed**, when needed.
 
 - `"SMALL"` (179 KB)
@@ -85,7 +85,7 @@ Currently, there are 3 pretrained models for sudoku recognition. The model will 
 
 > **⚠️ WARNING:** Automatic installation of the models on the first use.
 
-## 4. Public API overview
+## 5. Public API overview
 
 ### `SudokuImage`
 
