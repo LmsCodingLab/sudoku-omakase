@@ -4,7 +4,7 @@ from torchvision import models
 from enum import Enum
 
 class ModelType(Enum):
-  BAD = "basic"
+  SMALL = "basic"
   NORMAL = "resnet"
   BIG = "resnext"
 

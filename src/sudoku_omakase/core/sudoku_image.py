@@ -14,7 +14,7 @@ class SudokuImage(Sudoku):
     """
     Represents a sudoku image and provides methods for preprocessing, extracting fields, and predicting numbers.
     """
-    def __init__(self, source: str, model_type: Literal["BAD", "NORMAL", "BIG"] = "NORMAL") -> None:
+    def __init__(self, source: str, model_type: Literal["SMALL", "NORMAL", "BIG"] = "NORMAL") -> None:
         p = Path(source).expanduser()
         if not p.is_file():
             raise FileNotFoundError(f"File not found: {source}")
