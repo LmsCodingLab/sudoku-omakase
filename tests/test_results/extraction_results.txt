@@ -1,0 +1,51 @@
+Extraction results for model type: old basic_cnn
+
+Overall wrong cells: 26
+Overall accuracy: 94.65%
+
+Extraction results for model type: broken old resnet
+
+Overall wrong cells: 322
+Overall accuracy: 33.74%
+
+Extraction results for model type: old resnext
+
+Overall wrong cells: 8
+Overall accuracy: 98.35%
+
+
+Extraction results for model type: new bad 16
+
+Overall wrong cells: 344
+Overall accuracy: 29.22%
+
+Extraction results for model type: new bad 17
+
+Overall wrong cells: 347
+Overall accuracy: 28.60%
+
+Extraction results for model type: new bad 18
+
+Overall wrong cells: 345
+Overall accuracy: 29.01%
+
+Extraction results for model type: new big 9
+
+Overall wrong cells: 1
+Overall accuracy: 99.79%
+
+Extraction results for model type: new big 15
+
+Overall wrong cells: 2
+Overall accuracy: 99.59%
+
+Extraction results for model type: new big 16
+
+Overall wrong cells: 1
+Overall accuracy: 99.79%
+
+Extraction results for model type: new normal 16
+
+Overall wrong cells: 1
+Overall accuracy: 99.79%
+

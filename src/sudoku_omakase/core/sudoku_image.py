@@ -14,7 +14,7 @@ class SudokuImage(Sudoku):
     """
     Represents a sudoku image and provides methods for preprocessing, extracting fields, and predicting numbers.
     """
-    def __init__(self, source: str, model_type: Literal["BAD", "NORMAL", "BIG"] = "NORMAL") -> None:
+    def __init__(self, source: str, model_type: Literal["SMALL", "NORMAL", "BIG"] = "NORMAL") -> None:
         p = Path(source).expanduser()
         if not p.is_file():
             raise FileNotFoundError(f"File not found: {source}")
@@ -44,6 +44,21 @@ class SudokuImage(Sudoku):
         self._preprocess()
         self._get_fields()
         return self._get_numbers()
+    
+    def get_extracted_sudoku_image(self) -> Image:
+        """
+        Returns the preprocessed (warped) image of the sudoku grid.
+
+        Parameters:
+        - self: SudokuImage, the instance of the SudokuImage class containing the warped image.
+
+        Returns:
+        - np.ndarray, the preprocessed (warped) image of the sudoku grid.
+        """
+        if self.warped is None:
+            raise RuntimeError("Image must be preprocessed before accessing the warped image. Call _preprocess() method first.")
+        
+        return self.warped.copy()
 
     def _preprocess(self) -> Image:
         """
