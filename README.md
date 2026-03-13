@@ -88,7 +88,7 @@ Currently, there are 3 pretrained models for sudoku recognition. The model will 
 
 Use this class when you have a picture. Point it to any JPEG/PNG path, pick a `model_type`, and call `solve()`. Afterwards you can:
 
-- Inspect the recognized puzzle via `sudoku.board`, `sudoku.grid`, or `print(sudoku)`.
+- Inspect the recognized puzzle via `sudoku.board` or `print(sudoku)`.
 - Export the solved grid as NumPy (`to_numpy()`), Python lists (`to_list()`), or mutate cells with `mutate_one_field()` if something looks off.
 - Enable optional keyword arguments like `device="cuda"`, `debug_dir="out/"`, or `cell_padding=2` to tune performance and logging.
 
