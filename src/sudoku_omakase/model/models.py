@@ -91,9 +91,7 @@ class ResNet18_32(nn.Module):
     self.model = models.resnet18(weights=None)
     self.model.conv1 = nn.Conv2d(in_channels=input_shape, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
     self.model.maxpool = nn.Identity()  # type: ignore[assignment] 
-    self.model.fc = nn.Sequential(      # type: ignore[assignment] 
-      nn.Linear(in_features=512, out_features=output_shape)
-    )
+    self.model.fc = nn.Linear(in_features=512, out_features=output_shape)
   
   def forward(self, x: torch.Tensor) -> torch.Tensor:
     return self.model(x)
