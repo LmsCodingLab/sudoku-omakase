@@ -1,6 +1,17 @@
-This project is a python package for solving sudokus from images. It uses computer vision to extract the sudoku grid and digits, and then uses a combined algorithm with first utelizing a simple implementation of crooks algorithm and backtracking if needed.
+This project is a python package for solving sudokus from images. It uses computer vision to extract the sudoku grid and digits, and then uses a combined algorithm with first utilizing
+a simple implementation of crooks algorithm and backtracking if needed.
 
 ## 1. Installation
+**Virtual environment**
+
+Not exactly necessary but highly recommended.
+
+```sh
+python -m venv .venv
+```
+```sh
+source .venv/bin/activate
+```
 
 **PyTorch note (CPU vs CUDA)**
 > If you have an NVIDIA GPU and want CUDA acceleration, install a PyTorch build that matches your CUDA version.
