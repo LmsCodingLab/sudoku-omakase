@@ -1,8 +1,8 @@
-This project is a python package for solving sudokus from images. It uses computer vision to extract the sudoku grid and digits, and then uses a backtracking algorithm to solve the sudoku.
+This project is a python package for solving sudokus from images. It uses computer vision to extract the sudoku grid and digits, and then uses a combined algorithm with first utelizing a simple implementation of crooks algorithm and backtracking if needed.
 
 ## 1. Installation
 
-> **PyTorch note (CPU vs CUDA):**
+**PyTorch note (CPU vs CUDA)**
 > If you have an NVIDIA GPU and want CUDA acceleration, install a PyTorch build that matches your CUDA version.
 > Use the official selector to get the correct command for your system:
 > https://pytorch.org/get-started/locally/
@@ -12,6 +12,7 @@ This project is a python package for solving sudokus from images. It uses comput
 pip install torch torchvision
 ```
 
+**Build**
 ```sh
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ sudoku-omakase==0.1.0
 ```
@@ -57,22 +58,21 @@ print(sudoku)
 
 ## 3. Usage
 
-1. **Bild vorbereiten:** Sorge für ein kontrastreiches, rechteckiges Foto der Sudoku-Zeitungsseite. Entferne Randbereiche oder rotiere die Datei so, dass das Gitter nahezu frontal sichtbar ist; unscharfe Kanten führen sonst zu Fehlern.
-2. **`SudokuImage` erzeugen:** Lade das Bild über `SudokuImage(source=..., model_type=...)`. `model_type` wählt den OCR-Backbone (`BAD`, `NORMAL`, `BIG` – langsam aber am genauesten). 
-3. **`solve()` aufrufen:** `sudoku.solve()` führt die Zell-Klassifikation und den Backtracking-Solver aus. Falls keine Lösung gefunden wird, prüfe zuerst das Log – meist liegt es an falsch erkannten Ziffern oder daran, dass das Raster nicht sauber extrahiert werden konnte.
-4. **Ergebnis interpretieren:** Über `print(sudoku)` oder `sudoku.board` erhältst du das vollständig gelöste 9x9-Array. 
+1. **Prepare the image:** Capture a high-contrast, rectangular photo of the puzzle page. Crop borders or rotate the file so the grid is almost front-facing; blurry edges usually cause extraction glitches.
+2. **Instantiate `SudokuImage`:** Load the image with `SudokuImage(source=..., model_type=...)`. `model_type` selects the OCR backbone (`BAD`, `NORMAL`, `BIG`). The bigger the model, the slower but more accurate. 
+3. **Call `solve()`:** `sudoku.solve()` runs digit classification and the backtracking solver. If solving fails, inspect the errors — most issues stem from misread digits or a poorly detected grid.
+4. **Read the result:** Use `print(sudoku)` or `sudoku.board` to access the solved 9×9 array.
 
-### Häufig genutzte Parameter
+### Common parameters
 
-- `model_type`: `"SMALL"` (schnell, genügt für klare Scans), `"NORMAL"` (Standard), `"BIG"` (robust bei schlechten Fotos).
-- `source`: Dateipfad (String); stelle sicher, dass Pfade relativ zum Arbeitsverzeichnis existieren.
+- `model_type`: `"BAD"` (fast, good lighting), `"NORMAL"` (balanced default), `"BIG"` (handles noisy phones scans).
+- `source`: File path, numpy array, or bytes; make sure relative paths exist within your working directory.
 
 
 ## Models
-Currently, there are 3 pretrained Models for sudoku recognition.
+Currently, there are 3 pretrained Models for sudoku recognition. The modell will be automatically installed, when needed.
 
-- `"SMALL"` (179 KB)
+- `"BAD"` (179 KB)
 - `"NORMAL"` (42 MB)
 - `"BIG"` (332 MB)
-
 
