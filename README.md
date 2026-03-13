@@ -17,7 +17,7 @@ pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/
 ```
 !DANGER Packages on testPyPI are temporary, it maybe already deleted. Please contact if so.
 
-## 2. Example Usage
+## 2. Quickstart
 
 ```python
 from sudoku_omakase import SudokuImage
@@ -56,5 +56,23 @@ print(sudoku)
 ```
 
 ## 3. Usage
+
+1. **Bild vorbereiten:** Sorge für ein kontrastreiches, rechteckiges Foto der Sudoku-Zeitungsseite. Entferne Randbereiche oder rotiere die Datei so, dass das Gitter nahezu frontal sichtbar ist; unscharfe Kanten führen sonst zu Fehlern.
+2. **`SudokuImage` erzeugen:** Lade das Bild über `SudokuImage(source=..., model_type=...)`. `model_type` wählt den OCR-Backbone (`BAD`, `NORMAL`, `BIG` – langsam aber am genauesten). 
+3. **`solve()` aufrufen:** `sudoku.solve()` führt die Zell-Klassifikation und den Backtracking-Solver aus. Falls keine Lösung gefunden wird, prüfe zuerst das Log – meist liegt es an falsch erkannten Ziffern oder daran, dass das Raster nicht sauber extrahiert werden konnte.
+4. **Ergebnis interpretieren:** Über `print(sudoku)` oder `sudoku.board` erhältst du das vollständig gelöste 9x9-Array. 
+
+### Häufig genutzte Parameter
+
+- `model_type`: `"SMALL"` (schnell, genügt für klare Scans), `"NORMAL"` (Standard), `"BIG"` (robust bei schlechten Fotos).
+- `source`: Dateipfad (String); stelle sicher, dass Pfade relativ zum Arbeitsverzeichnis existieren.
+
+
+## Models
+Currently, there are 3 pretrained Models for sudoku recognition.
+
+- `"SMALL"` (179 KB)
+- `"NORMAL"` (42 MB)
+- `"BIG"` (332 MB)
 
 
