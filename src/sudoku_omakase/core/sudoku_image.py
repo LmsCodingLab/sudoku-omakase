@@ -22,14 +22,15 @@ class SudokuImage(Sudoku):
         self.source = p
         self.model_type = ModelType[model_type]
 
-        board = self.get_sudoku_from_image()
-        super().__init__(board)
-        
         self.image: Image | None = None
         self.corners: npt.NDArray[np.float32] | None = None
         self.warped: Image | None = None
         self.fields: list[Image] | None = None
         self.numbers: npt.NDArray[np.int8] | None = None
+        
+        board = self.get_sudoku_from_image()
+        super().__init__(board)
+        
 
     def get_sudoku_from_image(self) -> npt.NDArray[np.int8]:
         """
