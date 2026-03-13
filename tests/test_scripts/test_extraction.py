@@ -101,7 +101,7 @@ for i, board in enumerate(test_extraction()):
     overall_wrong_cells += wrong_cells
     print(f"Wrong cells: {wrong_cells}\n\n")
 
-with open("extraction_results.txt", "a") as f:
+with open("tests/test_results/extraction_results.txt", "a") as f:
     f.write(f"Extraction results for model type: {MODEL_TYPE}\n\n")
     f.write(f"Overall wrong cells: {overall_wrong_cells}\n")
     f.write(f"Overall accuracy: {(1 - overall_wrong_cells / (len(SUDOKU_PATHS) * 81)) * 100:.2f}%\n")

@@ -28,7 +28,24 @@ Extraction results for model type: new bad 18
 
 Overall wrong cells: 345
 Overall accuracy: 29.01%
-Extraction results for model type: BAD
 
-Overall wrong cells: 345
-Overall accuracy: 29.01%
+Extraction results for model type: new big 9
+
+Overall wrong cells: 1
+Overall accuracy: 99.79%
+
+Extraction results for model type: new big 15
+
+Overall wrong cells: 2
+Overall accuracy: 99.59%
+
+Extraction results for model type: new big 16
+
+Overall wrong cells: 1
+Overall accuracy: 99.79%
+
+Extraction results for model type: new normal 16
+
+Overall wrong cells: 1
+Overall accuracy: 99.79%
+
