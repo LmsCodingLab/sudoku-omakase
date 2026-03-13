@@ -15,14 +15,22 @@ def warmup(batch_size: int = 64) -> tuple[DataLoader, DataLoader]:
   """
 
 
-  svhn_transform = transforms.Compose([
+  svhn_train_transform = transforms.Compose([
+    transforms.Grayscale(),
+    transforms.RandomCrop(32, padding=4),
+    transforms.RandomRotation(degrees=10),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=(0.5,), std=(0.5,))
+  ])
+
+  svhn_test_transform = transforms.Compose([
     transforms.Grayscale(),
     transforms.ToTensor(),
     transforms.Normalize(mean=(0.5,), std=(0.5,))
   ])
 
-  svhn_train = datasets.SVHN(root="./model_training/datasets", split="train", download=True, transform=svhn_transform)
-  svhn_test = datasets.SVHN(root="./model_training/datasets", split="test", download=True, transform=svhn_transform)
+  svhn_train = datasets.SVHN(root="./model_training/datasets", split="train", download=True, transform=svhn_train_transform)
+  svhn_test = datasets.SVHN(root="./model_training/datasets", split="test", download=True, transform=svhn_test_transform)
 
 
   use_cuda = torch.cuda.is_available()
