@@ -25,7 +25,7 @@ pip install torch torchvision
 
 **Build**
 ```sh
-pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ sudoku-omakase==0.1.0
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ sudoku-omakase==0.1.2
 ```
 > **⚠️ WARNING:** Packages on TestPyPI are temporary and may already be deleted. Please contact the maintainer if this occurs.
 
