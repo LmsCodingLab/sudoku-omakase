@@ -74,11 +74,6 @@ print(sudoku)
 3. **Call `solve()`:** `sudoku.solve()` runs digit classification and the backtracking solver. If solving fails, inspect the errors — most issues stem from misread digits or a poorly detected grid.
 4. **Read the result:** Use `print(sudoku)` or `sudoku.board` to access the solved 9×9 array.
 
-### Common parameters
-
-- `model_type`: `"SMALL"` (fast, good lighting), `"NORMAL"` (balanced default), `"BIG"` (handles noisy phones scans).
-- `source`: File path, numpy array, or bytes; make sure relative paths exist within your working directory.
-
 
 ## Models
 Currently, there are 3 pretrained models for sudoku recognition. The model will be automatically installed, when needed.
@@ -87,23 +82,21 @@ Currently, there are 3 pretrained models for sudoku recognition. The model will 
 - `"NORMAL"` (42 MB)
 - `"BIG"` (332 MB)
 
-## 4. How it works
+## 4. Public API overview
 
 ### `SudokuImage`
 
-The high-level entry point that turns a photo into a solvable grid lives in [src/sudoku_omakase/core/sudoku_image.py](src/sudoku_omakase/core/sudoku_image.py). The class inherits from `Sudoku`, so every extracted board immediately gains solving capabilities.
+Use this class when you have a picture. Point it to any JPEG/PNG path, pick a `model_type`, and call `solve()`. Afterwards you can:
 
-- **Preprocessing:** `prepare_image()` normalizes contrast, `detect_grid()` finds the outer contour, and `warp_image()` produces a top-down crop so downstream steps see a perfect square.
-- **Cell extraction:** `extract_fields()` slices the warped grid into 81 tiles, and `resize_fields()` brings each tile to the expected CNN input size.
-- **Digit prediction:** `extract_numbers()` runs the configured OCR model (`ModelType` cast from the `model_type` string) and returns a `9x9` NumPy array with zeros for uncertain cells.
-- Because it subclasses `Sudoku`, calling `SudokuImage.solve()` immediately reuses the same solver logic described below.
+- Inspect the recognized puzzle via `sudoku.board`, `sudoku.grid`, or `print(sudoku)`.
+- Export the solved grid as NumPy (`to_numpy()`), Python lists (`to_list()`), or mutate cells with `mutate_one_field()` if something looks off.
+- Enable optional keyword arguments like `device="cuda"`, `debug_dir="out/"`, or `cell_padding=2` to tune performance and logging.
 
-### `Sudoku` solver core
+### `Sudoku`
 
-The solving logic is implemented in [src/sudoku_omakase/core/solver.py](src/sudoku_omakase/core/solver.py) and wrapped by [src/sudoku_omakase/core/sudoku.py](src/sudoku_omakase/core/sudoku.py).
+Use this class when you already own the 9×9 array. Initialize it with a NumPy grid, then:
 
-- **Crook-style passes:** `run_passes()` repeatedly applies human-style deductions such as naked singles, hidden singles, and naked subsets. Each technique mutates the board in place and recalculates candidate markup when progress is made.
-- **Backtracking fallback:** If deterministic passes stall, `dfs()` performs a depth-first search with heuristics (choose the cell with the fewest candidates first) to resolve remaining ambiguity.
-- **Board validity:** `Sudoku.is_solved_sudoku()` ensures every row, column, and 3x3 block contains digits 1–9 without repetition; this guard runs after solving and after manual mutations.
-- **Mutations and inspection:** Helper methods like `mutate_one_field()` or `mutate_fields()` support editing puzzles programmatically, while `__str__()` produces a readable grid with block separators for debugging.
+- Run `solve()` to apply the built-in deduction plus backtracking routine.
+- Check completion state via `sudoku.solved` or revalidate with `is_solved_sudoku()`.
+- Adjust entries using `mutate_fields()` or inspect them cell-by-cell; printing the instance shows a formatted board with block separators.
 
