@@ -83,6 +83,8 @@ Currently, there are 3 pretrained models for sudoku recognition. The model will 
 - `"NORMAL"` (42 MB)
 - `"BIG"` (332 MB)
 
+> **⚠️ WARNING:** Automatical installation of the models on the first use. 
+
 ## 4. Public API overview
 
 ### `SudokuImage`
