@@ -18,7 +18,7 @@ def basic_training_loop(model_type: ModelType) -> nn.Module:
   - nn.Module: The trained model after the training loop is completed.
   """
   torch.cuda.empty_cache() # Clear GPU memory before starting training
-  if model_type == ModelType.BAD:
+  if model_type == ModelType.SMALL:
     model = BasicCNNModel(input_shape=1, output_shape=10)
   elif model_type == ModelType.NORMAL:
     model = ResNet18_32(input_shape=1, output_shape=10)

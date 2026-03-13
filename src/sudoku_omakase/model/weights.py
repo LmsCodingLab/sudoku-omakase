@@ -12,11 +12,11 @@ odie = pooch.create(
 )
 
 def load_model_from_origin(model_type: ModelType) -> str:
-    if model_type == ModelType.BAD:
+    if model_type == ModelType.SMALL:
         return odie.fetch("basic_cnn_model.pth", progressbar=True)
     elif model_type == ModelType.NORMAL:
         return odie.fetch("resnet_model.pth", progressbar=True)
     elif model_type == ModelType.BIG:
         return odie.fetch("resnext_model.pth", progressbar=True)
     else:
-        raise ValueError(f"Unknown model type: {model_type}. Expected ModelType.BAD, ModelType.NORMAL, or ModelType.BIG.")
+        raise ValueError(f"Unknown model type: {model_type}. Expected ModelType.SMALL, ModelType.NORMAL, or ModelType.BIG.")
