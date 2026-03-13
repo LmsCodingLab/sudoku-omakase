@@ -44,6 +44,21 @@ class SudokuImage(Sudoku):
         self._preprocess()
         self._get_fields()
         return self._get_numbers()
+    
+    def get_extracted_sudoku_image(self) -> Image:
+        """
+        Returns the preprocessed (warped) image of the sudoku grid.
+
+        Parameters:
+        - self: SudokuImage, the instance of the SudokuImage class containing the warped image.
+
+        Returns:
+        - np.ndarray, the preprocessed (warped) image of the sudoku grid.
+        """
+        if self.warped is None:
+            raise RuntimeError("Image must be preprocessed before accessing the warped image. Call _preprocess() method first.")
+        
+        return self.warped.copy()
 
     def _preprocess(self) -> Image:
         """
