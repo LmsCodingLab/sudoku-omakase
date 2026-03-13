@@ -1,4 +1,4 @@
-This project is a python package for solving sudokus from images. It uses computer vision to extract the sudoku grid and digits, and then uses a combined algorithm with first utilizing
+This project is a Python package for solving sudokus from images. It uses computer vision to extract the sudoku grid and digits, and then uses a combined algorithm with first utilizing
 a simple implementation of crooks algorithm and backtracking if needed.
 
 ## 1. Installation
@@ -27,7 +27,7 @@ pip install torch torchvision
 ```sh
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ sudoku-omakase==0.1.0
 ```
-!DANGER Packages on testPyPI are temporary, it maybe already deleted. Please contact if so.
+> **⚠️ WARNING:** Packages on TestPyPI are temporary and may already be deleted. Please contact the maintainer if this occurs.
 
 ## 2. Quickstart
 
@@ -46,6 +46,7 @@ Or if you already have the grid and just want to solve it:
 
 ```python
 from sudoku_omakase import Sudoku
+import numpy as np
 
 grid = np.array([
         [0, 0, 0, 2, 0, 0, 0, 6, 3],
@@ -76,7 +77,7 @@ print(sudoku)
 
 
 ## Models
-Currently, there are 3 pretrained models for sudoku recognition. The model will be automatically installed, when needed.
+Currently, there are 3 pretrained models for sudoku recognition. The model will be **automatically installed**, when needed.
 
 - `"SMALL"` (179 KB)
 - `"NORMAL"` (42 MB)
