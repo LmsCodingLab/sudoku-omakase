@@ -59,20 +59,20 @@ print(sudoku)
 ## 3. Usage
 
 1. **Prepare the image:** Capture a high-contrast, rectangular photo of the puzzle page. Crop borders or rotate the file so the grid is almost front-facing; blurry edges usually cause extraction glitches.
-2. **Instantiate `SudokuImage`:** Load the image with `SudokuImage(source=..., model_type=...)`. `model_type` selects the OCR backbone (`BAD`, `NORMAL`, `BIG`). The bigger the model, the slower but more accurate. 
+2. **Instantiate `SudokuImage`:** Load the image with `SudokuImage(source=..., model_type=...)`. `model_type` selects the OCR backbone (`SMALL`, `NORMAL`, `BIG`). The bigger the model, the slower but more accurate. 
 3. **Call `solve()`:** `sudoku.solve()` runs digit classification and the backtracking solver. If solving fails, inspect the errors — most issues stem from misread digits or a poorly detected grid.
 4. **Read the result:** Use `print(sudoku)` or `sudoku.board` to access the solved 9×9 array.
 
 ### Common parameters
 
-- `model_type`: `"BAD"` (fast, good lighting), `"NORMAL"` (balanced default), `"BIG"` (handles noisy phones scans).
+- `model_type`: `"SMALL"` (fast, good lighting), `"NORMAL"` (balanced default), `"BIG"` (handles noisy phones scans).
 - `source`: File path, numpy array, or bytes; make sure relative paths exist within your working directory.
 
 
 ## Models
 Currently, there are 3 pretrained Models for sudoku recognition. The modell will be automatically installed, when needed.
 
-- `"BAD"` (179 KB)
+- `"SMALL"` (179 KB)
 - `"NORMAL"` (42 MB)
 - `"BIG"` (332 MB)
 
