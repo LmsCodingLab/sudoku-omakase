@@ -81,7 +81,7 @@ print(sudoku)
 
 
 ## Models
-Currently, there are 3 pretrained Models for sudoku recognition. The modell will be automatically installed, when needed.
+Currently, there are 3 pretrained models for sudoku recognition. The model will be automatically installed, when needed.
 
 - `"SMALL"` (179 KB)
 - `"NORMAL"` (42 MB)
