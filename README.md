@@ -87,3 +87,23 @@ Currently, there are 3 pretrained models for sudoku recognition. The model will 
 - `"NORMAL"` (42 MB)
 - `"BIG"` (332 MB)
 
+## 4. How it works
+
+### `SudokuImage`
+
+The high-level entry point that turns a photo into a solvable grid lives in [src/sudoku_omakase/core/sudoku_image.py](src/sudoku_omakase/core/sudoku_image.py). The class inherits from `Sudoku`, so every extracted board immediately gains solving capabilities.
+
+- **Preprocessing:** `prepare_image()` normalizes contrast, `detect_grid()` finds the outer contour, and `warp_image()` produces a top-down crop so downstream steps see a perfect square.
+- **Cell extraction:** `extract_fields()` slices the warped grid into 81 tiles, and `resize_fields()` brings each tile to the expected CNN input size.
+- **Digit prediction:** `extract_numbers()` runs the configured OCR model (`ModelType` cast from the `model_type` string) and returns a `9x9` NumPy array with zeros for uncertain cells.
+- Because it subclasses `Sudoku`, calling `SudokuImage.solve()` immediately reuses the same solver logic described below.
+
+### `Sudoku` solver core
+
+The solving logic is implemented in [src/sudoku_omakase/core/solver.py](src/sudoku_omakase/core/solver.py) and wrapped by [src/sudoku_omakase/core/sudoku.py](src/sudoku_omakase/core/sudoku.py).
+
+- **Crook-style passes:** `run_passes()` repeatedly applies human-style deductions such as naked singles, hidden singles, and naked subsets. Each technique mutates the board in place and recalculates candidate markup when progress is made.
+- **Backtracking fallback:** If deterministic passes stall, `dfs()` performs a depth-first search with heuristics (choose the cell with the fewest candidates first) to resolve remaining ambiguity.
+- **Board validity:** `Sudoku.is_solved_sudoku()` ensures every row, column, and 3x3 block contains digits 1–9 without repetition; this guard runs after solving and after manual mutations.
+- **Mutations and inspection:** Helper methods like `mutate_one_field()` or `mutate_fields()` support editing puzzles programmatically, while `__str__()` produces a readable grid with block separators for debugging.
+
