@@ -1,4 +1,7 @@
 from sudoku_omakase import SudokuImage
+import pytest
+import numpy as np
+
 
 SUDOKU_PATHS = [
     "tests/test_images/IMG_0120.jpg",
@@ -77,13 +80,18 @@ CORRECT_BOARDS = [
     ]
 ]
 
+CASES = list(zip(SUDOKU_PATHS, CORRECT_BOARDS))
+
 MODEL_TYPE = "BIG"
 
-def test_extraction():
-    for path in SUDOKU_PATHS:
-        print(f"Processing {path}...")
-        sudoku = SudokuImage(path, model_type=MODEL_TYPE)
-        yield sudoku.board
+@pytest.mark.parametrize(("path", "correct"), CASES)
+def test_extraction(path, correct) -> None:
+    sudoku = SudokuImage(path, model_type=MODEL_TYPE)
+    extracted = sudoku.board
+    wrong = calculate_wrong_cells(extracted, correct)
+    accuracy = 1 - wrong / 81
+    assert accuracy >= 0.95, f"{path}: {wrong} mismatched cells"
+    
 
 def calculate_wrong_cells(extracted, correct):
     wrong_cells = 0
@@ -93,17 +101,3 @@ def calculate_wrong_cells(extracted, correct):
                 wrong_cells += 1
     return wrong_cells
 
-
-overall_wrong_cells = 0
-for i, board in enumerate(test_extraction()):
-    correct = CORRECT_BOARDS[i]
-    wrong_cells = calculate_wrong_cells(board, correct)
-    overall_wrong_cells += wrong_cells
-    print(f"Wrong cells: {wrong_cells}\n\n")
-
-with open("tests/test_results/extraction_results.txt", "a") as f:
-    f.write(f"Extraction results for model type: {MODEL_TYPE}\n\n")
-    f.write(f"Overall wrong cells: {overall_wrong_cells}\n")
-    f.write(f"Overall accuracy: {(1 - overall_wrong_cells / (len(SUDOKU_PATHS) * 81)) * 100:.2f}%\n")
-
-        
