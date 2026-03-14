@@ -1,6 +1,5 @@
 from sudoku_omakase import SudokuImage
 import pytest
-import pytest
 
 
 SUDOKU_PATHS = [
@@ -89,7 +88,7 @@ def test_extraction(path, correct) -> None:
     sudoku = SudokuImage(path, model_type=MODEL_TYPE)
     extracted = sudoku.board
     wrong = calculate_wrong_cells(extracted, correct)
-    accuracy = 1 - wrong / 81
+    accuracy = 1 - (wrong / 81)
     assert accuracy >= 0.95, f"{path}: {wrong} mismatched cells"
     
 
