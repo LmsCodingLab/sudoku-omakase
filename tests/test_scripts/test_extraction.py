@@ -1,6 +1,6 @@
 from sudoku_omakase import SudokuImage
 import pytest
-import numpy as np
+import pytest
 
 
 SUDOKU_PATHS = [
