@@ -30,6 +30,37 @@ def guess_num(data: numpy.ndarray, model_type: ModelType) -> int:
 
   return prediction
 
+
+def _load_compatible_state_dict(model: torch.nn.Module, state_dict: dict[str, torch.Tensor]) -> None:
+  """Load checkpoints while handling legacy fc naming differences.
+
+  Some released checkpoints store the classifier weights as
+  `model.fc.1.{weight,bias}` (Sequential with Dropout + Linear), while the
+  current model definition may expose them as `model.fc.{weight,bias}`
+  (direct Linear). This keeps loading backward/forward compatible.
+  """
+  try:
+    model.load_state_dict(state_dict)
+    return
+  except RuntimeError:
+    pass
+
+  if "model.fc.1.weight" in state_dict and "model.fc.weight" not in state_dict:
+    state_dict = dict(state_dict)
+    state_dict["model.fc.weight"] = state_dict.pop("model.fc.1.weight")
+    state_dict["model.fc.bias"] = state_dict.pop("model.fc.1.bias")
+    model.load_state_dict(state_dict)
+    return
+
+  if "model.fc.weight" in state_dict and "model.fc.1.weight" not in state_dict:
+    state_dict = dict(state_dict)
+    state_dict["model.fc.1.weight"] = state_dict.pop("model.fc.weight")
+    state_dict["model.fc.1.bias"] = state_dict.pop("model.fc.bias")
+    model.load_state_dict(state_dict)
+    return
+
+  model.load_state_dict(state_dict)
+
 @cache
 def load_model(model_type: ModelType) -> torch.nn.Module:
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -44,7 +75,7 @@ def load_model(model_type: ModelType) -> torch.nn.Module:
   
   path_to_weights = load_model_from_origin(model_type)
   state_dict = torch.load(path_to_weights, map_location=device)
-  model.load_state_dict(state_dict)
+  _load_compatible_state_dict(model, state_dict)
   model.to(device)
   model.eval()
 
