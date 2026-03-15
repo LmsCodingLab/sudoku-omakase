@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sudoku_omakase.core.sudoku import Sudoku
+from sudoku_omakase import Sudoku
 
 EXAMPLE_GRID = np.array([
     [4, 1, 5, 2, 7, 9, 3, 8, 6],
