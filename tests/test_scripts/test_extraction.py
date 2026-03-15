@@ -77,7 +77,7 @@ CORRECT_BOARDS = [
     ]
 ]
 
-MODEL_TYPE = "BIG"
+MODEL_TYPE = "NORMAL"
 
 def test_extraction():
     for path in SUDOKU_PATHS:

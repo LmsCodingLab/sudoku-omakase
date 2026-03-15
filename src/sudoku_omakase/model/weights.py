@@ -6,7 +6,7 @@ odie = pooch.create(
     base_url="https://github.com/LmsCodingLab/sudoku-omakase/releases/download/weights/",
     registry={
         "basic_cnn_model.pth": "sha256:033bc8c12b655aaa98b598ce892a1d0afca2851c0f8733281c493b0d55876565",
-        "resnet_model.pth": "sha256:aae0c90eaf9ca472e75193242646d461c0b50248c10ba7d7483df5fa3ed07704",
+        "resnet_model.pth": "sha256:fe2c6c9d35d6254b2a061d99725113a1eb781d1bb06c451dff2301f1f69f57bd",
         "resnext_model.pth": "sha256:50decf440080f4e8cecef79f26aaede1651e0dd5d601a9cea6c9b3e087876101",
     }
 )
