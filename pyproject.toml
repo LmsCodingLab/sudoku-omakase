@@ -23,11 +23,20 @@ dependencies = [
     "tqdm==4.67.3",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-cov",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [project.urls]
 "Homepage" = "https://github.com/LmsCodingLab/sudoku-omakase"
