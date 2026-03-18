@@ -47,8 +47,8 @@ def detect_grid(image: Image) -> npt.NDArray[np.float32]:
 	"""
 
 	# Connect broken grid lines / border so contours become closed
-	kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-	closed_image = cast(Image, cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel, iterations=2))
+	kernel = cv2.getStructuringElement(shape=cv2.MORPH_RECT, ksize=(5, 5))
+	closed_image = cast(Image, cv2.morphologyEx(src=image, op=cv2.MORPH_CLOSE, kernel=kernel, iterations=2))
 
 	# Find contours in the edged image
 	contours, _ = cv2.findContours(image=closed_image, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
