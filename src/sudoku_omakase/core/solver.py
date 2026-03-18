@@ -105,7 +105,7 @@ def identify_candidates(grid: npt.NDArray[np.int8], row: int, column: int) -> se
     """
     
     #check row and column
-    used = set(grid[row]) | {grid[i, column] for i in range(GRID_SIZE)}
+    used = set(grid[row, :]) | set(grid[:, column])
     
     #check block
     block_row_start = (row // BLOCK_SIZE) * BLOCK_SIZE
