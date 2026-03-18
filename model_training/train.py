@@ -4,7 +4,7 @@ from pathlib import Path
 
 from sudoku_omakase.model.models import BasicCNNModel, ResNeXt_101, ResNet18_32, ModelType
 from model_training.warmup import warmup
-from model_training.steps import accuracy_fn, training_step, testing_step
+from model_training.steps import training_step, testing_step
 
 def basic_training_loop(model_type: ModelType) -> nn.Module:
   """
@@ -44,13 +44,11 @@ def basic_training_loop(model_type: ModelType) -> nn.Module:
                   data_loader=data_loader,
                   loss_fn=loss_fn,
                   optimizer=optimizer,
-                  accuracy_fn=accuracy_fn,
                   device=device)
     
     test_loss, test_acc = testing_step(model=model,
               data_loader=test_loader,
               loss_fn=loss_fn,
-              accuracy_fn=accuracy_fn,
               device=device) 
     scheduler.step()
     torch.save(model.state_dict(), f"weights/{model_type}_model{epoch}.pth")

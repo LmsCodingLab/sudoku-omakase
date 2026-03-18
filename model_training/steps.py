@@ -20,7 +20,6 @@ def training_step(
                data_loader: torch.utils.data.DataLoader,
                loss_fn: torch.nn.Module,
                optimizer: torch.optim.Optimizer,
-               accuracy_fn,
                device: torch.device = torch.device("cpu")) -> tuple[float, float]:
     """
     Performs a training step for a given model, data loader, loss function, optimizer, and accuracy function.
@@ -68,7 +67,6 @@ def training_step(
 def testing_step(data_loader: torch.utils.data.DataLoader,
               model: torch.nn.Module,
               loss_fn: torch.nn.Module,
-              accuracy_fn,
               device: torch.device = torch.device("cpu")) -> tuple[float, float]:
     """
     Performs a testing step for a given model, data loader, loss function, and accuracy function.
