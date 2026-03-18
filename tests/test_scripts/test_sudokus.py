@@ -1,4 +1,7 @@
 import numpy as np
+import pytest
+
+from sudoku_omakase import Sudoku
 
 EXAMPLE_GRID = np.array([
     [4, 1, 5, 2, 7, 9, 3, 8, 6],
@@ -44,3 +47,26 @@ EXAMPLE_GRID_X_WING = np.array([
     [5, 0, 3, 7, 0, 0, 0, 0, 8],
     [4, 7, 0, 0, 0, 1, 0, 0, 0]
 ])
+
+
+@pytest.mark.parametrize(
+    "grid",
+    [
+        EXAMPLE_GRID_HOLES,
+        EXAMPLE_GRID_SHORTZ,
+        EXAMPLE_GRID_X_WING,
+    ],
+    ids=["holes", "shortz", "x-wing"],
+)
+def test_solver_fills_examples(grid: np.ndarray) -> None:
+    sudoku = Sudoku(grid.copy())
+    assert sudoku.solve() is True
+    assert sudoku.solved is True
+    assert not np.any(sudoku.board == 0)
+
+
+def test_solver_keeps_completed_grid() -> None:
+    sudoku = Sudoku(EXAMPLE_GRID.copy())
+    assert sudoku.is_solved_sudoku() is True
+    assert sudoku.solve() is True
+    np.testing.assert_array_equal(sudoku.board, EXAMPLE_GRID)
