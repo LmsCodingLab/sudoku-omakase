@@ -61,8 +61,8 @@ def basic_training_loop(model_type: ModelType) -> nn.Module:
   return model
 
 if __name__ == "__main__":
-  model = basic_training_loop(model_type=ModelType.BAD)
-  print(f"Training completed for model type: {ModelType.BAD}")
+  model = basic_training_loop(model_type=ModelType.SMALL)
+  print(f"Training completed for model type: {ModelType.SMALL}")
   model = basic_training_loop(model_type=ModelType.NORMAL)
   print(f"Training completed for model type: {ModelType.NORMAL}")
   model = basic_training_loop(model_type=ModelType.BIG)
