@@ -5,6 +5,16 @@ from sudoku_omakase.model.models import ResNet18_32, BasicCNNModel, ResNeXt_101,
 from sudoku_omakase.model.weights import load_model_from_origin
 
 def guess_num(data: numpy.ndarray, model_type: ModelType) -> int:
+  """
+  Uses the specified model to predict the digit represented by the input data.
+
+  Parameters:
+  - data: numpy.ndarray, the input data representing the image of a single cell (should be a 2D array of pixel values).
+  - model_type: ModelType, the type of model to use for prediction (e.g., ModelType.SMALL, ModelType.NORMAL, ModelType.BIG).  
+
+  Returns:
+  - int, the predicted digit (0-9) for the input cell. If the model is not confident enough, it may return 0 to indicate "uncertain".
+  """
   model = load_model(model_type)
 
   input_data = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)
@@ -63,6 +73,15 @@ def _load_compatible_state_dict(model: torch.nn.Module, state_dict: dict[str, to
 
 @cache
 def load_model(model_type: ModelType) -> torch.nn.Module:
+  """
+  Loads the specified model type with pre-trained weights.
+
+  Parameters:
+  - model_type: ModelType, the type of model to load (e.g., ModelType.SMALL, ModelType.NORMAL, ModelType.BIG).
+
+  Returns:
+  - torch.nn.Module, the loaded model ready for inference.
+  """
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   if model_type == ModelType.SMALL:
     model = BasicCNNModel(1, 10)
